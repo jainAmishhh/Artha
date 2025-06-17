@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XseFi - Expense Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-[#181818] text-white font-sans">
+
+    <!-- Navbar -->
+    <header class="flex justify-between items-center px-8 py-6">
+      <div class="text-2xl font-bold text-white">
+        <span class="text-white">Xse</span><span class="text-orange-400">Fi</span>
+      </div>
+      <nav class="space-x-6 text-gray-300 hidden md:block">
+        <a href="#" class="hover:text-white">Home</a>
+        <a href="#" class="hover:text-white">Service</a>
+        <a href="#" class="hover:text-white">Features</a>
+        <a href="#" class="hover:text-white">Pricing</a>
+        <a href="#" class="hover:text-white">About Us</a>
+      </nav>
+      <div class="space-x-4 hidden md:block">
+        <button class="text-white">Log In</button>
+        <button class="border border-orange-400 text-orange-400 px-4 py-1 rounded hover:bg-orange-400 hover:text-black transition">
+          Sign Up
+        </button>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="grid md:grid-cols-2 items-center px-8 py-12 gap-10">
+      <!-- Text Content -->
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-6">
+          Manage Your <br />
+          Expenses Easily <br />
+          With <span class="text-orange-400">XseFi</span>
+        </h1>
+        <p class="text-gray-400 mb-6 max-w-md">
+          Lorem Ipsum is simply dummy text of the printing and typesetting industry. It has been the industry's standard dummy text ever since the 1500s.
+        </p>
+        <div class="flex gap-4">
+          <button class="bg-orange-400 px-6 py-2 rounded text-black font-semibold">Let's Talk</button>
+          <button class="border border-white px-6 py-2 rounded text-white hover:bg-white hover:text-black">View Demo</button>
+        </div>
+      </div>
+
+      <!-- Graphical Section -->
+      <div class="relative w-full h-full">
+        <!-- Total Expenses Card -->
+        <div class="absolute top-0 left-0 bg-[#c9d8cb] text-black p-4 rounded-lg w-64 shadow-md">
+          <p class="text-sm">Total Expenses</p>
+          <h2 class="text-2xl font-bold">$1,220.00</h2>
+          <p class="text-xs text-gray-700">This month <span class="text-green-600">+10%</span></p>
+        </div>
+
+        <!-- Total Revenue Card -->
+        <div class="absolute top-28 right-0 bg-[#f8936e] text-black p-4 rounded-lg w-64 shadow-md">
+          <p class="text-sm">Total Revenue</p>
+          <h2 class="text-2xl font-bold">$8,675.00</h2>
+          <p class="text-xs text-gray-700">This month <span class="text-red-600">-36%</span></p>
+        </div>
+
+        <!-- Analytics Graph -->
+        <div class="absolute top-12 left-40 w-64 h-36 bg-white rounded-md shadow-md p-2">
+          <h3 class="text-sm text-black font-semibold mb-1">Analytics</h3>
+          <div class="flex justify-between items-end gap-2 h-24">
+            <div class="bg-orange-400 w-4 h-16"></div>
+            <div class="bg-green-500 w-4 h-10"></div>
+            <div class="bg-orange-400 w-4 h-20"></div>
+            <div class="bg-green-500 w-4 h-8"></div>
+            <div class="bg-orange-400 w-4 h-16"></div>
+          </div>
+        </div>
+
+        <!-- Card Info -->
+        <div class="absolute bottom-12 left-0 bg-[#b9d0c5] text-black p-4 rounded-lg w-72 shadow-md">
+          <p class="text-sm font-semibold">VISA **** 7602</p>
+          <p class="text-xs mt-2">Cardholder: <strong>Emily Watson</strong></p>
+          <p class="text-xs">Expiry: 06/12/2023</p>
+        </div>
+
+        <!-- Transactions -->
+        <div class="absolute bottom-0 right-0 w-72 bg-[#1e1e1e] p-4 rounded-lg text-sm text-white">
+          <h4 class="font-bold text-white mb-2">Latest Transactions</h4>
+          <div class="flex justify-between items-center mb-2">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center text-xs">+</div>
+              <span>Income: Salary Oct</span>
+            </div>
+            <span class="text-green-400">+$1200</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-xs">-</div>
+              <span>Electric Bill</span>
+            </div>
+            <span class="text-red-400">-$480</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Logos -->
+    <footer class="px-8 py-6 mt-12">
+      <div class="flex flex-wrap justify-center gap-8 opacity-40">
+        <img src="https://via.placeholder.com/100x20?text=SEVERIN" alt="" />
+        <img src="https://via.placeholder.com/100x20?text=CANALI" alt="" />
+        <img src="https://via.placeholder.com/100x20?text=PRAXAIR" alt="" />
+        <img src="https://via.placeholder.com/100x20?text=SolarCity" alt="" />
+        <img src="https://via.placeholder.com/100x20?text=CONNEX" alt="" />
+        <img src="https://via.placeholder.com/100x20?text=BRICKWORKS" alt="" />
+      </div>
+    </footer>
+  </body>
+</html>
