@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .budget-overview {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .total-budget {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .budget-label {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .budget-amount {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .budget-change {
+            color: #10b981;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .time-filters {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .time-btn {
+            background: #f7fafc;
+            border: none;
+            border-radius: 20px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .time-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+
+        .chart-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .budget-item {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .budget-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .item-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .item-details h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .item-budget {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .add-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #10b981;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-btn:hover {
+            background: #059669;
+            transform: scale(1.1);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .sidebar {
+                grid-row: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 15px 20px;
+                margin-bottom: 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .budget-overview {
+                padding: 25px;
+            }
+
+            .budget-amount {
+                font-size: 36px;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .bottom-nav {
+                display: block;
+            }
+
+            body {
+                padding-bottom: 80px;
+            }
+
+            .main-content {
+                gap: 15px;
+            }
+
+            .budget-item {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .time-filters {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .time-btn {
+                flex: 1;
+                min-width: 60px;
+            }
+
+            .budget-amount {
+                font-size: 28px;
+            }
+
+            .item-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Budget Dashboard</h1>
+            <div class="header-controls">
+                <button class="btn">← Back</button>
+                <button class="btn">🔍 Search</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="budget-overview">
+                <div class="total-budget">
+                    <div class="budget-label">Total Budget ($)</div>
+                    <div class="budget-amount">$ 9,900.00</div>
+                    <div class="budget-change">+ $1100.00</div>
+                </div>
+
+                <div class="time-filters">
+                    <button class="time-btn">1D</button>
+                    <button class="time-btn">1W</button>
+                    <button class="time-btn">1M</button>
+                    <button class="time-btn active">1Y</button>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="budgetChart"></canvas>
+                    <div class="chart-info">$400</div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="budget-item">
+                    <div class="item-header">
+                        <div class="item-info">
+                            <div class="item-icon">📚</div>
+                            <div class="item-details">
+                                <h3>Education</h3>
+                                <div class="item-budget">Budget: $1000.00</div>
+                            </div>
+                        </div>
+                        <button class="add-btn">+</button>
+                    </div>
+                    <div class="progress-info">
+                        <span>Budget $1000.00</span>
+                        <span>Remaining $900.00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 10%"></div>
+                    </div>
+                </div>
+
+                <div class="budget-item">
+                    <div class="item-header">
+                        <div class="item-info">
+                            <div class="item-icon">🚨</div>
+                            <div class="item-details">
+                                <h3>Emergency</h3>
+                                <div class="item-budget">Budget: $1000.00</div>
+                            </div>
+                        </div>
+                        <button class="add-btn">+</button>
+                    </div>
+                    <div class="progress-info">
+                        <span>Budget $1000.00</span>
+                        <span>Remaining $800.00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 20%"></div>
+                    </div>
+                </div>
+
+                <div class="budget-item">
+                    <div class="item-header">
+                        <div class="item-info">
+                            <div class="item-icon">🏠</div>
+                            <div class="item-details">
+                                <h3>Housing</h3>
+                                <div class="item-budget">Budget: $2500.00</div>
+                            </div>
+                        </div>
+                        <button class="add-btn">+</button>
+                    </div>
+                    <div class="progress-info">
+                        <span>Budget $2500.00</span>
+                        <span>Remaining $1200.00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 52%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-items">
+                <div class="nav-item">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Home</div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-icon">🔄</div>
+                    <div class="nav-label">Transaction</div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-label">Plan</div>
+                </div>
+                <div class="nav-item active">
+                    <div class="nav-icon">💰</div>
+                    <div class="nav-label">Budget</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Chart
+        const ctx = document.getElementById('budgetChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                datasets: [{
+                    label: 'Budget Trend',
+                    data: [300, 150, 400, 200, 600, 400],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 3,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#666'
+                        }
+                    },
+                    y: {
+                        display: false,
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        hoverRadius: 8
+                    }
+                }
+            }
+        });
+
+        // Interactive Elements
+        document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update chart data based on selection
+                const periods = {
+                    '1D': [380, 420, 400, 450, 430, 400],
+                    '1W': [200, 350, 300, 400, 350, 400],
+                    '1M': [100, 250, 200, 350, 300, 400],
+                    '1Y': [300, 150, 400, 200, 600, 400]
+                };
+                
+                chart.data.datasets[0].data = periods[this.textContent];
+                chart.update();
+            });
+        });
+
+        // Add hover effects to budget items
+        document.querySelectorAll('.budget-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Add button functionality
+        document.querySelectorAll('.add-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1.1)';
+                }, 100);
+            });
+        });
+
+        // Animate progress bars on load
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.progress-fill').forEach(fill => {
+                const width = fill.style.width;
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.width = width;
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>
