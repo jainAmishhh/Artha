@@ -25,8 +25,6 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex gap-6 text-sm font-medium text-[#1A2E28]">
             {navItems.map((item) => (
-              
-              
               <NavLink
                 key={item.name}
                 to={item.path}
@@ -42,7 +40,9 @@ const Header = () => {
                   <>
                     {item.name}
                     <span
-                      className={`absolute -bottom-0.5 left-0 h-0.5 rounded-full bg-gradient-to-r from-[#22543D] to-[#F4C542] transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover:w-full"} `}
+                      className={`absolute -bottom-0.5 left-0 h-0.5 rounded-full bg-gradient-to-r from-[#22543D] to-[#F4C542] transition-all duration-300 ${
+                        isActive ? "w-full" : "w-0 group-hover:w-full"
+                      } `}
                     ></span>
                   </>
                 )}
@@ -53,8 +53,16 @@ const Header = () => {
           {/* Right Section */}
           <div className="flex items-center space-x-3 lg:space-x-4">
             {/* Add Button */}
-            <button className="hidden md:flex items-center gap-2 bg-[#22543D] hover:bg-[#1A3D30] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+            <button className="relative md:flex items-center gap-2 bg-[#22543D] hover:bg-[#1A3D30] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg  p-2.5 hover:text-[#f4c542] border boder-[#14a2e28] group">
               <Plus size={18} /> Add
+              <div className="absolute top-full right-0 mt-2 w-80 bg-white text-[#1A2E28] border border-gray-200 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 p-4 z-50 space-y-3">
+                <div className="p-3 bg-gray-100 rounded-lg border-l-4 border-[#22543D] hover:bg-gray-200 hover:text-[#22543D] hover:scale-105 transition-all duration-300">
+                  <p className="flex flex-row justify-center items-center gap-x-3 "><Plus size={18} /> Add Transactions</p>                  
+                </div>
+                <div className="p-3 bg-gray-100 rounded-lg border-l-4 border-[#22543D] hover:bg-gray-200 hover:text-[#22543D] hover:scale-105 transition-all duration-300">
+                  <p className="flex flex-row justify-center items-center gap-x-3 "><Plus size={18} /> Add To-Do</p>
+                </div>
+              </div>
             </button>
 
             {/* Notification */}
@@ -82,7 +90,7 @@ const Header = () => {
 
             {/* Profile */}
             <div className="relative group">
-              <button className="w-10 h-10 rounded-lg bg-[#22543D] hover:bg-[#1A3D30] text-white flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-lg">
+              <button className="w-10 h-10 rounded-lg bg-[#22543D] hover:bg-[#1A3D30] hover:text-[#f4c542] text-white flex items-center justify-center transition-all duration-300 transform hover:scale-105 shadow-lg">
                 <UserRound size={18} />
               </button>
               <div className="absolute right-0 mt-3 w-48 bg-white text-[#1A2E28] border border-gray-200 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 overflow-hidden z-50">
