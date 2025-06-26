@@ -1,0 +1,20 @@
+{
+  "name": "expense-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/jainAmishhh/expense-tracker#readme",
+  "bugs": {
+    "url": "https://github.com/jainAmishhh/expense-tracker/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jainAmishhh/expense-tracker.git"
+  },
+  "license": "ISC",
+  "author": "Amish Jain",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
