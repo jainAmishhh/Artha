@@ -1,4 +1,5 @@
 **🧠 Artha – Sutra for Modern Money & Mindfulness**
+
 Artha is an intelligent personal dashboard designed to help you track your income, manage expenses, organize budgets, and maintain a daily to-do planner — all in one beautifully designed app.
 
 🔗 Built for modern mindful living, with Indian users in mind.
@@ -7,6 +8,7 @@ Artha is an intelligent personal dashboard designed to help you track your incom
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 **✨ Features**
+
 🔗 Bank Linking (via Account Aggregator frameworks like FinBox)
 
 💸 Expense Tracking with transaction categorization
