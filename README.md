@@ -3,6 +3,7 @@
 Artha is an intelligent personal dashboard designed to help you track your income, manage expenses, organize budgets, and maintain a daily to-do planner — all in one beautifully designed app.
 
 🔗 Built for modern mindful living, with Indian users in mind.
+
 🌿 Combines finance + productivity in a minimal and intuitive interface.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
