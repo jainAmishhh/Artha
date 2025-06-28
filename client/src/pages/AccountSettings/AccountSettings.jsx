@@ -410,12 +410,12 @@ const ProfileSettingsPage = () => {
                   </div>
                   <button
                     onClick={() => handleNotificationToggle(item.key)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ₹{
                       notifications[item.key] ? 'bg-yellow-400' : 'bg-gray-600'
                     }`}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ₹{
                         notifications[item.key] ? 'translate-x-6' : 'translate-x-1'
                       }`}
                     />
@@ -441,12 +441,12 @@ const ProfileSettingsPage = () => {
               </div>
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ₹{
                   isDarkMode ? 'bg-yellow-400' : 'bg-gray-600'
                 }`}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ₹{
                     isDarkMode ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
@@ -486,7 +486,7 @@ const ProfileSettingsPage = () => {
                             borderColor: 'rgba(244, 197, 66, 0.3)',
                             color: '#FAFAFA'
                           }}>
-                    <option value="usd">USD ($)</option>
+                    <option value="usd">USD (₹)</option>
                     <option value="eur">EUR (€)</option>
                     <option value="gbp">GBP (£)</option>
                     <option value="jpy">JPY (¥)</option>
@@ -527,10 +527,10 @@ const ProfileSettingsPage = () => {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="text-xl font-semibold" style={{color: '#FAFAFA'}}>Current Plan</h3>
-                  <p className="text-sm" style={{color: 'rgba(250, 250, 250, 0.7)'}}>Pro Plan - $19.99/month</p>
+                  <p className="text-sm" style={{color: 'rgba(250, 250, 250, 0.7)'}}>Pro Plan - ₹19.99/month</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-2xl font-bold" style={{color: '#F4C542'}}>$19.99</span>
+                  <span className="text-2xl font-bold" style={{color: '#F4C542'}}>₹19.99</span>
                   <p className="text-sm" style={{color: 'rgba(250, 250, 250, 0.7)'}}>per month</p>
                 </div>
               </div>
@@ -571,9 +571,9 @@ const ProfileSettingsPage = () => {
               <h3 className="text-xl font-semibold mb-4" style={{color: '#FAFAFA'}}>Billing History</h3>
               <div className="space-y-3">
                 {[
-                  { date: 'Dec 28, 2024', amount: '$19.99', status: 'Paid' },
-                  { date: 'Nov 28, 2024', amount: '$19.99', status: 'Paid' },
-                  { date: 'Oct 28, 2024', amount: '$19.99', status: 'Paid' }
+                  { date: 'Dec 28, 2024', amount: '₹19.99', status: 'Paid' },
+                  { date: 'Nov 28, 2024', amount: '₹19.99', status: 'Paid' },
+                  { date: 'Oct 28, 2024', amount: '₹19.99', status: 'Paid' }
                 ].map((invoice, index) => (
                   <div key={index} className="flex items-center justify-between p-3 rounded-2xl" style={{background: 'rgba(250, 250, 250, 0.05)'}}>
                     <div>
@@ -642,7 +642,7 @@ const ProfileSettingsPage = () => {
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ${
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 ₹{
                           activeTab === tab.id 
                             ? 'scale-105 shadow-lg' 
                             : 'hover:scale-105'

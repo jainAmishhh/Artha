@@ -5,12 +5,17 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+// importing layout
 import Layout from "./Layout";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Budget from "./pages/Budget/Budget";
-import Transaction from "./pages/Transaction/Transaction";
-import ToDo from "./pages/ToDo/ToDo";
-import Insights from "./pages/Insights/Insights";
+
+// authentication page
+import AuthPage from './components/AuthPage/AuthPage'
+
+import UserDashboard from "./pages/UserDashboard/UserDashboard";
+import BudgetDashboard from "./pages/BudgetDashboard/BudgetDashboard";
+import TransactionHistory from "./pages/TransactionHistory/TransactionHistory";
+import ToDoDashboard from "./pages/ToDoDashboard/ToDoDashboard";
+import FinancialInsightsDashboard from "./pages/FinancialInsightsDashboard/FinancialInsightsDashboard";
 import ErrorPage from "./pages/ErrorPage/ErrorPage"; // optional
 
 const router = createBrowserRouter([
@@ -19,11 +24,12 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: <ErrorPage />, // optional
     children: [
-      { index: true, element: <Dashboard /> },
-      { path: "budgets", element: <Budget /> },
-      { path: "transaction", element: <Transaction /> },
-      { path: "to-do", element: <ToDo /> },
-      { path: "insights", element: <Insights /> },
+      { index: true, element: <UserDashboard /> },
+      { path: "authUser", element: <AuthPage /> },
+      { path: "budgets", element: <BudgetDashboard /> },
+      { path: "transaction", element: <TransactionHistory /> },
+      { path: "to-do", element: <ToDoDashboard /> },
+      { path: "insights", element: <FinancialInsightsDashboard /> },
     ],
   },
 ]);

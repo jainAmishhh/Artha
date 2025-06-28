@@ -20,3 +20,6 @@ Artha is an intelligent personal dashboard designed to help you track your incom
 📈 Insights & Analytics to see where your money goes
 
 🔔 Smart notifications for budget limits or missed tasks
+
+
+

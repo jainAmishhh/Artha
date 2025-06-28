@@ -1,8 +1,10 @@
-import React from 'react'
+import React from "react";
 import { FaCirclePlay } from "react-icons/fa6";
 import { MdPlayForWork } from "react-icons/md";
+import { NavLink } from "react-router-dom";
+import { IoIosArrowDroprightCircle } from "react-icons/io";
 
-const Dashboard = () => {
+const UserDashboard = () => {
   return (
     <div>
       {/* Hero Section */}
@@ -21,8 +23,9 @@ const Dashboard = () => {
             <FaCirclePlay />
           </button>
           <a
-           href='#how-it-works'
-           className="flex items-center gap-2 border border-[#22543D] text-[#22543D] px-6 py-3 rounded-lg hover:bg-[#1b3e2e] hover:scale-105 hover:text-white transition-all duration-300">
+            href="#how-it-works"
+            className="flex items-center gap-2 border border-[#22543D] text-[#22543D] px-6 py-3 rounded-lg hover:bg-[#1b3e2e] hover:scale-105 hover:text-white transition-all duration-300"
+          >
             How It Works
             <MdPlayForWork />
           </a>
@@ -48,7 +51,7 @@ const Dashboard = () => {
           ].map((item, i) => (
             <div
               key={i}
-              className="bg-[#F8FAF9] p-6 rounded-xl shadow hover:shadow-md transition"
+              className="bg-[#F8FAF9] p-6 rounded-xl shadow shadow-gray-300 hover:shadow-lg hover:shadow-gray-400 transition"
             >
               <div className="text-4xl mb-4">{item.icon}</div>
               <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
@@ -98,26 +101,28 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Dashboard Section Highlights (Optional) */}
+      {/* UserDashboard Section Highlights (Optional) */}
       <section className="py-20 px-6 md:px-24 bg-white" id="dashboard">
         <h2 className="text-3xl font-bold text-center mb-12">
           Explore Your Dashboard
         </h2>
         <div className="grid md:grid-cols-5 gap-6 text-center">
           {[
-            { label: "Dashboard", emoji: "📊" },
-            { label: "Transactions", emoji: "💸" },
-            { label: "Budgets", emoji: "🧮" },
-            { label: "To-Do", emoji: "📝" },
-            { label: "Insights", emoji: "💹" },
+            { name: "Dashboard", path: "/", emoji: "📊" },
+            { name: "Budgets", path: "/budgets", emoji: "🧮" },
+            { name: "Transactions", path: "/transaction", emoji: "💸" },
+            { name: "To-Do", path: "/to-do", emoji: "📝" },
+            { name: "Insights", path: "/insights", emoji: "💹" },
           ].map((item, i) => (
-            <div
+            <NavLink
+              to={item.path}
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               key={i}
-              className="bg-[#F9F9F7] p-6 rounded-xl shadow hover:shadow-md transition"
+              className="bg-[#F9F9F7] p-6 rounded-xl shadow shadow-gray-300 hover:shadow-lg hover:shadow-gray-400 transition"
             >
               <div className="text-4xl mb-3">{item.emoji}</div>
-              <h3 className="text-lg font-semibold">{item.label}</h3>
-            </div>
+              <h3 className="text-lg font-semibold">{item.name}</h3>
+            </NavLink>
           ))}
         </div>
       </section>
@@ -127,12 +132,18 @@ const Dashboard = () => {
         <h2 className="text-3xl font-bold mb-6">
           Ready to take control of your time & finances?
         </h2>
-        <button className="bg-[#22543D] text-white px-6 py-3 rounded-lg text-lg hover:bg-[#1c4332] transition">
-          Get Early Access
+        <NavLink to="authUser">
+        <button className="bg-[#22543D] text-white px-6 py-3 rounded-lg text-lg hover:bg-[#1c4332] transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-center gap-2">
+            Start Your Journey
+            <IoIosArrowDroprightCircle />
+          </div>
         </button>
+
+        </NavLink>
       </section>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default UserDashboard;

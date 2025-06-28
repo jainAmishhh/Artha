@@ -282,7 +282,7 @@ const TodoDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 relative overflow-hidden" style={{background: 'linear-gradient(135deg, #312E81 0%, #6B46C1 50%, #BE185D 100%)'}}>
+    <div className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-green-700 relative overflow-hidden mt-8 md:mt-12" style={{background: 'linear-gradient(135deg, #22543D 0%, #2D5A41 50%, #1A4B35 100%)'}}>
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full blur-3xl animate-pulse" style={{background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%)'}}></div>
@@ -392,7 +392,7 @@ const TodoDashboard = () => {
             {/* Sort Options */}
             <div className="flex gap-3">
               <select
-                value={`${sortBy}-${sortOrder}`}
+                value={`₹{sortBy}-₹{sortOrder}`}
                 onChange={(e) => {
                   const [field, order] = e.target.value.split('-');
                   setSortBy(field);
@@ -424,7 +424,7 @@ const TodoDashboard = () => {
               >
                 <Filter className="w-5 h-5" />
                 <span>Filters</span>
-                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showFilters ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ₹{showFilters ? 'rotate-180' : ''}`} />
               </button>
             </div>
           </div>
@@ -520,9 +520,9 @@ const TodoDashboard = () => {
                 return (
                   <div
                     key={todo.id}
-                    className={`flex items-center justify-between p-4 rounded-2xl hover:scale-[1.02] transition-all duration-300 group ${
+                    className={`flex items-center justify-between p-4 rounded-2xl hover:scale-[1.02] transition-all duration-300 group ₹{
                       todo.status === 'completed' ? 'opacity-75' : ''
-                    } ${isTaskOverdue ? 'ring-2 ring-red-400' : ''}`}
+                    } ₹{isTaskOverdue ? 'ring-2 ring-red-400' : ''}`}
                     style={{background: 'rgba(250, 250, 250, 0.05)'}}
                   >
                     <div className="flex items-center gap-4">
@@ -539,13 +539,13 @@ const TodoDashboard = () => {
                       
                       <div 
                         className="p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300"
-                        style={{background: `${todo.color}20`}}
+                        style={{background: `₹{todo.color}20`}}
                       >
                         <IconComponent className="w-6 h-6" style={{color: todo.color}} />
                       </div>
                       
                       <div className="flex-1">
-                        <h3 className={`font-semibold ${todo.status === 'completed' ? 'line-through' : ''}`} style={{color: '#FAFAFA'}}>
+                        <h3 className={`font-semibold ₹{todo.status === 'completed' ? 'line-through' : ''}`} style={{color: '#FAFAFA'}}>
                           {todo.title}
                         </h3>
                         <p className="text-sm mb-2" style={{color: 'rgba(250, 250, 250, 0.6)'}}>
@@ -553,13 +553,13 @@ const TodoDashboard = () => {
                         </p>
                         <div className="flex items-center gap-3 text-sm" style={{color: 'rgba(250, 250, 250, 0.6)'}}>
                           <span className="px-2 py-1 rounded-full text-xs" style={{
-                            background: `${todo.color}20`,
+                            background: `₹{todo.color}20`,
                             color: todo.color
                           }}>
                             {todo.role}
                           </span>
                           <span className="px-2 py-1 rounded-full text-xs" style={{
-                            background: `${getPriorityColor(todo.priority)}20`,
+                            background: `₹{getPriorityColor(todo.priority)}20`,
                             color: getPriorityColor(todo.priority)
                           }}>
                             {todo.priority} priority
@@ -742,7 +742,7 @@ const TodoDashboard = () => {
               return (
                 <button
                   key={index}
-                  className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all duration-300 ${
+                  className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all duration-300 ₹{
                     item.active ? 'scale-110' : ''
                   }`}
                   style={item.active 

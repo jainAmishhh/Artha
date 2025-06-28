@@ -254,7 +254,7 @@ const FinancialInsightsDashboard = () => {
               </div>
               <div>
                 <p className="text-sm" style={{color: 'rgba(250, 250, 250, 0.7)'}}>Avg Daily Spending</p>
-                <p className="text-2xl font-bold" style={{color: '#059669'}}>${(totalExpenses / 30).toFixed(0)}</p>
+                <p className="text-2xl font-bold" style={{color: '#059669'}}>₹{(totalExpenses / 30).toFixed(0)}</p>
               </div>
             </div>
           </div>
@@ -350,7 +350,7 @@ const FinancialInsightsDashboard = () => {
                   dataKey="amount"
                 >
                   {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                    <Cell key={`cell-₹{index}`} fill={entry.color} />
                   ))}
                 </Pie>
               </PieChart>
@@ -400,17 +400,17 @@ const FinancialInsightsDashboard = () => {
               {todoData.map((todo) => (
                 <div key={todo.id} className="flex items-center justify-between p-4 rounded-2xl" style={{background: 'rgba(250, 250, 250, 0.05)'}}>
                   <div className="flex items-center gap-3">
-                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${todo.completed ? 'bg-green-500 border-green-500' : 'border-gray-400'}`}>
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ₹{todo.completed ? 'bg-green-500 border-green-500' : 'border-gray-400'}`}>
                       {todo.completed && <CheckCircle className="w-3 h-3 text-white" />}
                     </div>
                     <div>
-                      <p className={`text-sm font-medium ${todo.completed ? 'line-through opacity-60' : ''}`} style={{color: '#FAFAFA'}}>
+                      <p className={`text-sm font-medium ₹{todo.completed ? 'line-through opacity-60' : ''}`} style={{color: '#FAFAFA'}}>
                         {todo.task}
                       </p>
                       <p className="text-xs" style={{color: 'rgba(250, 250, 250, 0.5)'}}>{todo.category}</p>
                     </div>
                   </div>
-                  <div className={`px-2 py-1 rounded-full text-xs ${
+                  <div className={`px-2 py-1 rounded-full text-xs ₹{
                     todo.priority === 'high' ? 'bg-red-500 bg-opacity-20 text-red-400' :
                     todo.priority === 'medium' ? 'bg-yellow-500 bg-opacity-20 text-yellow-400' :
                     'bg-green-500 bg-opacity-20 text-green-400'
@@ -438,7 +438,7 @@ const FinancialInsightsDashboard = () => {
             </div>
             <div className="p-4 rounded-2xl" style={{background: 'rgba(239, 68, 68, 0.1)', borderLeft: '4px solid #EF4444'}}>
               <h4 className="font-semibold text-red-400 mb-2">⚠️ Budget Alert</h4>
-              <p className="text-sm" style={{color: 'rgba(250, 250, 250, 0.8)'}}>Housing expenses exceeded budget by $125. Review upcoming payments.</p>
+              <p className="text-sm" style={{color: 'rgba(250, 250, 250, 0.8)'}}>Housing expenses exceeded budget by ₹125. Review upcoming payments.</p>
             </div>
             <div className="p-4 rounded-2xl" style={{background: 'rgba(244, 197, 66, 0.1)', borderLeft: '4px solid #F4C542'}}>
               <h4 className="font-semibold" style={{color: '#F4C542', marginBottom: '8px'}}>🎯 Goal Progress</h4>
@@ -484,7 +484,7 @@ const FinancialInsightsDashboard = () => {
                   <div className="flex items-center gap-4">
                     <div 
                       className="p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300"
-                      style={{background: `${transaction.color}20`}}
+                      style={{background: `₹{transaction.color}20`}}
                     >
                       <IconComponent className="w-6 h-6" style={{color: transaction.color}} />
                     </div>
@@ -495,7 +495,7 @@ const FinancialInsightsDashboard = () => {
                         <span>•</span>
                         <span>{formatDate(transaction.date)} at {transaction.time}</span>
                         <span className="px-2 py-1 rounded-full text-xs" style={{
-                          background: `${transaction.color}20`,
+                          background: `₹{transaction.color}20`,
                           color: transaction.color
                         }}>
                           {transaction.category}
@@ -504,8 +504,8 @@ const FinancialInsightsDashboard = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className={`text-lg font-bold ${transaction.amount > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {transaction.amount > 0 ? '+' : ''}${Math.abs(transaction.amount).toLocaleString()}
+                    <div className={`text-lg font-bold ₹{transaction.amount > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {transaction.amount > 0 ? '+' : ''}₹{Math.abs(transaction.amount).toLocaleString()}
                     </div>
                     <div className="text-xs" style={{color: 'rgba(250, 250, 250, 0.5)'}}>
                       {transaction.type === 'income' ? 'Credit' : 'Debit'}
@@ -530,7 +530,7 @@ const FinancialInsightsDashboard = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto p-4 lg:p-8">
         {/* Header */}
-        <div className="backdrop-blur-2xl border rounded-3xl p-6 mb-8 shadow-2xl" style={{background: 'rgba(250, 250, 250, 0.08)', borderColor: 'rgba(244, 197, 66, 0.2)'}}>
+        <div className="backdrop-blur-2xl border rounded-3xl p-6 mb-8 shadow-2xl mt-8 md:mt-12" style={{background: 'rgba(250, 250, 250, 0.08)', borderColor: 'rgba(244, 197, 66, 0.2)'}}>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-2xl shadow-lg" style={{background: 'linear-gradient(135deg, #F4C542 0%, #E6B73A 100%)'}}>
@@ -574,7 +574,7 @@ const FinancialInsightsDashboard = () => {
               </div>
               <div>
                 <p className="text-sm" style={{color: 'rgba(250, 250, 250, 0.7)'}}>Total Income</p>
-                <p className="text-2xl font-bold" style={{color: '#059669'}}>+${totalIncome.toLocaleString()}</p>
+                <p className="text-2xl font-bold" style={{color: '#059669'}}>+₹{totalIncome.toLocaleString()}</p>
               </div>
             </div>
           </div>
@@ -586,7 +586,7 @@ const FinancialInsightsDashboard = () => {
               </div>
               <div>
                 <p className="text-sm" style={{color: 'rgba(250, 250, 250, 0.7)'}}>Total Expenses</p>
-                <p className="text-2xl font-bold" style={{color: '#EF4444'}}>-${totalExpenses.toLocaleString()}</p>
+                <p className="text-2xl font-bold" style={{color: '#EF4444'}}>-₹{totalExpenses.toLocaleString()}</p>
               </div>
             </div>
           </div>
@@ -598,8 +598,8 @@ const FinancialInsightsDashboard = () => {
               </div>
               <div>
                 <p className="text-sm" style={{color: 'rgba(250, 250, 250, 0.7)'}}>Net Balance</p>
-                <p className={`text-2xl font-bold ${netBalance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {netBalance >= 0 ? '+' : ''}${netBalance.toLocaleString()}
+                <p className={`text-2xl font-bold ₹{netBalance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  {netBalance >= 0 ? '+' : ''}₹{netBalance.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -638,7 +638,7 @@ const FinancialInsightsDashboard = () => {
             >
               <Filter className="w-5 h-5" />
               <span>Filters</span>
-              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showFilters ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ₹{showFilters ? 'rotate-180' : ''}`} />
             </button>
           </div>
 
@@ -748,7 +748,7 @@ const FinancialInsightsDashboard = () => {
                 <button
                   key={index}
                   onClick={() => index === 1 && setActiveView(activeView === 'insights' ? 'transactions' : 'insights')}
-                  className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all duration-300 ${
+                  className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all duration-300 ₹{
                     item.active ? 'scale-110' : ''
                   }`}
                   style={item.active 
