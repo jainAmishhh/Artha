@@ -1,3 +1,87 @@
+// import React, { useState, useEffect } from 'react';
+// import { Plus, ListChecks } from 'lucide-react';
+// import ToDoHeader from './ToDoHeader';
+// import SummaryCards from './SummaryCards';
+// import TodoFilters from './TodoFilters';
+// import TodoList from './TodoList';
+// import AddTodoModal from './AddTodoModal';
+// // import BottomNav from './BottomNav';
+
+// const ToDoDashboard = () => {
+//   const [todos, setTodos] = useState(() => {
+//     // Load todos from local storage if available
+//     const saved = localStorage.getItem('todos');
+//     return saved ? JSON.parse(saved) : [];
+//   });
+
+//   const [filter, setFilter] = useState('all');
+//   const [sortBy, setSortBy] = useState('date'); // options: date, priority
+//   const [showAddModal, setShowAddModal] = useState(false);
+
+//   // Save todos to local storage
+//   useEffect(() => {
+//     localStorage.setItem('todos', JSON.stringify(todos));
+//   }, [todos]);
+
+//   // Add a new todo
+//   const handleAddTodo = (newTodo) => {
+//     setTodos((prev) => [newTodo, ...prev]);
+//   };
+
+//   // Toggle status between 'pending' and 'completed'
+//   const toggleTodoStatus = (id) => {
+//     setTodos((prev) =>
+//       prev.map((todo) =>
+//         todo.id === id ? { ...todo, status: todo.status === 'completed' ? 'pending' : 'completed' } : todo
+//       )
+//     );
+//   };
+
+//   // Delete a todo
+//   const deleteTodo = (id) => {
+//     setTodos((prev) => prev.filter((todo) => todo.id !== id));
+//   };
+
+//   return (
+//     <div className="min-h-screen p-4 pb-24 md:p-8 bg-gradient-to-tr from-[#0f172a] via-[#111827] to-[#1e293b] text-white">
+//       <ToDoHeader />
+
+//       <div className="flex justify-between items-center mb-4">
+//         <h2 className="text-xl font-semibold flex items-center gap-2">
+//           <ListChecks className="w-5 h-5" /> Your Tasks
+//         </h2>
+//         <button
+//           onClick={() => setShowAddModal(true)}
+//           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
+//         >
+//           <Plus size={18} /> Add Task
+//         </button>
+//       </div>
+
+//       <SummaryCards todos={todos} />
+
+//       <TodoFilters filter={filter} setFilter={setFilter} sortBy={sortBy} setSortBy={setSortBy} />
+
+//       <TodoList
+//         todos={todos}
+//         filter={filter}
+//         sortBy={sortBy}
+//         onToggleComplete={toggleTodoStatus}
+//         onDelete={deleteTodo}
+//       />
+
+//       {showAddModal && (
+//         <AddTodoModal onAdd={handleAddTodo} onClose={() => setShowAddModal(false)} />
+//       )}
+
+//       {/* <BottomNav onAddClick={() => setShowAddModal(true)} /> */}
+//     </div>
+//   );
+// };
+
+// export default ToDoDashboard;
+
+
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, TrendingUp, BookOpen, AlertTriangle, Home, RefreshCw, BarChart3, DollarSign, Sparkles, Filter, ArrowUpRight, ArrowDownLeft, Calendar, ChevronDown, Eye, Download, CheckCircle, Circle, Clock, Star, User, Briefcase, Heart, Code, Settings, Trash2, Edit3 } from 'lucide-react';
 

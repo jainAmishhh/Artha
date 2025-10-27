@@ -1,20 +1,26 @@
 {
-  "name": "expense-tracker",
+  "name": "artha",
   "version": "1.0.0",
-  "description": "",
-  "homepage": "https://github.com/jainAmishhh/expense-tracker#readme",
+  "description": "**🧠 Artha – Sutra for Modern Money & Mindfulness**",
+  "homepage": "https://github.com/jainAmishhh/Artha#readme",
   "bugs": {
-    "url": "https://github.com/jainAmishhh/expense-tracker/issues"
+    "url": "https://github.com/jainAmishhh/Artha/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jainAmishhh/expense-tracker.git"
+    "url": "git+https://github.com/jainAmishhh/Artha.git"
   },
   "license": "ISC",
   "author": "Amish Jain",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"npm run client\" \"npm run backend\"",
+    "backend": "cd Backend && npm run dev",
+    "client": "cd client && npm run dev"
+  },
+  "dependencies": {
+    "concurrently": "^9.2.1"
   }
 }
