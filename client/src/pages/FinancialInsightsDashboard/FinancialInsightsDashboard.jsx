@@ -1,253 +1,553 @@
+// axios.get("/api/insights/dashboard")
+//   .then(res => setInsights(res.data));
 
-import React, { act, useState } from "react";
-import FinancialInsightsHeader from "./FinancialInsightsHeader";
-import SummaryCard from "./SummaryCard";
-import transactionData from "../TransactionHistory/transactionData.js";
-import FinancialInsightFilterBar from "./FinancialInsightFilterBar.jsx";
-import RenderInsightsContent from "./renderInsightsContent.jsx";
-import RenderTransactionContent from "./RenderTransactionContent.jsx";
-// import KeyMetrics from "./KeyMetrics";
-// import SpendingTrendChart from "./SpendingTrendChart";
-// import CategoryBreakdownChart from "./CategoryBreakdownChart";
-// import BudgetPerformanceChart from "./BudgetPerformanceChart";
-// import TodoProgress from "./TodoProgress";
-// import TransactionsList from "./TransactionsList";
-import { transactionsData, budgetData, todoData } from "./mockData";
-// import categoryData from "./categoryData";
+// ✅ 1. Replace hardcoded sample data with API calls
+
+// Remove:
+
+// const transactions = [...]
+// const budgetData = [...]
+// const todoData = [...]
+
+
+// Replace with:
+
+// const [insights, setInsights] = useState(null);
+
+// useEffect(() => {
+//   axios.get("/api/insights/dashboard")
+//        .then(res => setInsights(res.data));
+// }, []);
+
+// ✅ 2. Use backend response values
+
+// Your backend returns:
+
+// income
+// expenses
+// netBalance
+// savingsRate
+// categoryPercentages
+// budgetPerformance
+// todoCompletionRate
+// completedTodos
+// totalTodos
+// highestExpense
+// totalTransactions
+
+
+// Replace UI values accordingly.
+
+// ✅ 3. Add loading / no-data states
+
+// Before data loads:
+
+// if (!insights) return <LoadingSkeleton />;
+
+// ✅ 4. Add filtering on transactions
+
+// The transactions page must call the existing:
+
+// 👉 /api/transactions/filter endpoint
+// instead of filtering in frontend.
+
+// ✅ 5. Add date-based filtering backend
+
+// Your UI includes:
+
+// Today
+
+// 7 Days
+
+// 30 Days
+
+// You must modify filterTransactions controller to also filter by date range if needed.
+
+// ✅ 6. (Optional but recommended)
+// Add separate “Insights” frontend service
+
+// services/insightsApi.js
+
+import React, { useState } from "react";
+import {
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  PieChart,
+  BarChart3,
+  Activity,
+  Target,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Search,
+  Filter,
+  ChevronDown,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Sparkles,
+  Award,
+} from "lucide-react";
 
 const FinancialInsightsDashboard = () => {
   const [activeView, setActiveView] = useState("insights");
-  const [transactions] = useState(transactionData);
   const [filters, setFilters] = useState({
     search: "",
     time: "All",
     type: "All",
     category: "All",
-    insight: "All",
   });
+  const [showFilters, setShowFilters] = useState(false);
 
-  const totalIncome = Number(
-    transactions
-      .filter((t) => t.type === "income")
-      .reduce((sum, t) => sum + (t.amount || 0), 0)
-  );
+  // Sample data
+  const transactions = [
+    { id: 1, description: "Salary", merchant: "Company", amount: 50000, type: "income", category: "Salary", date: "2025-06-15", color: "#10B981" },
+    { id: 2, description: "Groceries", merchant: "Store", amount: -2500, type: "expense", category: "Food", date: "2025-06-14", color: "#F59E0B" },
+    { id: 3, description: "Rent", merchant: "Landlord", amount: -15000, type: "expense", category: "Housing", date: "2025-06-10", color: "#3B82F6" },
+    { id: 4, description: "Freelance", merchant: "Client", amount: 8000, type: "income", category: "Freelance", date: "2025-06-08", color: "#10B981" },
+    { id: 5, description: "Coffee", merchant: "Cafe", amount: -350, type: "expense", category: "Food", date: "2025-06-12", color: "#F59E0B" },
+  ];
 
-  const totalExpenses = Math.abs(
-    transactions
-      .filter((t) => t.type === "expense")
-      .reduce((sum, t) => sum + (t.amount || 0), 0)
-  );
+  const budgetData = [
+    { category: "Food", budgeted: 5000, spent: 2850, color: "#F59E0B" },
+    { category: "Housing", budgeted: 15000, spent: 15000, color: "#3B82F6" },
+    { category: "Transportation", budgeted: 3000, spent: 2200, color: "#EF4444" },
+    { category: "Entertainment", budgeted: 2000, spent: 1500, color: "#EC4899" },
+  ];
 
+  const todoData = [
+    { id: 1, title: "Complete project", completed: true },
+    { id: 2, title: "Buy groceries", completed: true },
+    { id: 3, title: "Gym workout", completed: false },
+    { id: 4, title: "Team meeting", completed: true },
+  ];
+
+  const totalIncome = transactions.filter(t => t.type === "income").reduce((sum, t) => sum + t.amount, 0);
+  const totalExpenses = Math.abs(transactions.filter(t => t.type === "expense").reduce((sum, t) => sum + t.amount, 0));
   const netBalance = totalIncome - totalExpenses;
+  const completedTodos = todoData.filter(t => t.completed).length;
+  const todoCompletionRate = Math.round((completedTodos / todoData.length) * 100);
 
+  // Category breakdown
+  const categoryMap = {};
+  transactions.forEach(({ category, amount, color }) => {
+    if (!categoryMap[category]) {
+      categoryMap[category] = { category, amount: 0, color };
+    }
+    categoryMap[category].amount += Math.abs(amount);
+  });
+  const categoryData = Object.values(categoryMap);
+
+  // Spending by category percentage
+  const totalSpending = categoryData.reduce((sum, cat) => sum + cat.amount, 0);
+  const categoryPercentages = categoryData.map(cat => ({
+    ...cat,
+    percentage: Math.round((cat.amount / totalSpending) * 100)
+  }));
+
+  const timeFilters = ["All", "Today", "7 Days", "30 Days"];
+  const categories = ["All", ...new Set(transactions.map(t => t.category))];
+  const typeFilters = ["All", "income", "expense"];
+
+  const savingsRate = totalIncome > 0 ? Math.round((netBalance / totalIncome) * 100) : 0;
+  
   const getFilteredTransactions = () => {
     return transactions.filter((transaction) => {
       const search = filters.search.toLowerCase();
-
       const matchesSearch =
         transaction.description.toLowerCase().includes(search) ||
-        transaction.merchant.toLowerCase().includes(search) ||
-        String(transaction.amount).includes(search);
-
-      const matchesCategory =
-        filters.category === "All" || transaction.category === filters.category;
-
-      const matchesType =
-        filters.type === "All" || transaction.type === filters.type;
-
-      let matchesTime = true;
-      if (filters.time !== "All") {
-        const transactionDate = new Date(transaction.date);
-        const today = new Date();
-        const daysDiff = Math.floor(
-          (today - transactionDate) / (1000 * 60 * 60 * 24)
-        );
-
-        switch (filters.time) {
-          case "Today":
-            matchesTime = daysDiff === 0;
-            break;
-          case "7 Days":
-            matchesTime = daysDiff <= 7;
-            break;
-          case "30 Days":
-            matchesTime = daysDiff <= 30;
-            break;
-          default:
-            matchesTime = true;
-        }
-      }
-
-      return matchesSearch && matchesCategory && matchesType && matchesTime;
+        transaction.merchant.toLowerCase().includes(search);
+      const matchesCategory = filters.category === "All" || transaction.category === filters.category;
+      const matchesType = filters.type === "All" || transaction.type === filters.type;
+      return matchesSearch && matchesCategory && matchesType;
     });
   };
 
   const filteredTransactions = getFilteredTransactions();
 
-  const completedTodos = todoData.filter(
-    (todo) => todo.completed === true
-  ).length;
-  const todoCompletionRate = (completedTodos / todoData.length) * 100;
-
-  const generateInsightsData = () => {
-    // === Daily Trend (Income vs Expenses by Date) ===
-    const trendMap = {};
-
-    transactions.forEach(({ date, type, amount }) => {
-      if (!trendMap[date]) {
-        trendMap[date] = { date, income: 0, expenses: 0 };
-      }
-      if (type === "income") {
-        trendMap[date].income += amount;
-      } else {
-        trendMap[date].expenses += Math.abs(amount);
-      }
-    });
-
-    const trendData = Object.values(trendMap).sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
-    );
-
-    // === Category Breakdown (Pie Chart Data) ===
-    const categoryMap = {};
-
-    transactions.forEach(({ category, amount, color }) => {
-      if (!categoryMap[category]) {
-        categoryMap[category] = { category, amount: 0, color };
-      }
-      categoryMap[category].amount += Math.abs(amount);
-    });
-
-    const pieData = Object.values(categoryMap);
-
-    // === Budget vs Actual Comparison ===
-    const budgetComparison = budgetData.map((item) => ({
-      ...item,
-      variance:
-        item.category === "Income"
-          ? item.actual - item.budgeted
-          : item.budgeted - item.spent,
-    }));
-
-    return { trendData, pieData, budgetComparison };
-  };
-
-  const { trendData, pieData, budgetComparison } = generateInsightsData();
-
-  // const generateInsightsData = () => {
-  //   // Use all transactions directly
-  //   const allTransactions = transactions;
-
-  //   // Daily spending trend
-  //   const dailyData = allTransactions.reduce((acc, transaction) => {
-  //     const date = transaction.date;
-  //     if (!acc[date]) {
-  //       acc[date] = { date, income: 0, expenses: 0 };
-  //     }
-  //     if (transaction.type === "income") {
-  //       acc[date].income += transaction.amount;
-  //     } else {
-  //       acc[date].expenses += Math.abs(transaction.amount);
-  //     }
-  //     return acc;
-  //   }, {});
-
-  //   const trendData = Object.values(dailyData).sort(
-  //     (a, b) => new Date(a.date) - new Date(b.date)
-  //   );
-
-  //   // Category breakdown
-  //   const categoryData = allTransactions.reduce((acc, transaction) => {
-  //     if (!acc[transaction.category]) {
-  //       acc[transaction.category] = {
-  //         category: transaction.category,
-  //         amount: 0,
-  //         color: transaction.color,
-  //       };
-  //     }
-  //     acc[transaction.category].amount += Math.abs(transaction.amount);
-  //     return acc;
-  //   }, {});
-
-  //   const pieData = Object.values(categoryData);
-
-  //   // Budget vs Actual
-  //   const budgetComparison = budgetData.map((item) => ({
-  //     ...item,
-  //     variance:
-  //       item.category === "Income"
-  //         ? item.actual - item.budgeted
-  //         : item.budgeted - item.spent,
-  //   }));
-
-  //   return { trendData, pieData, budgetComparison };
-  // };
-
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-green-700 relative overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(135deg, #22543D 0%, #2D5A41 50%, #1A4B35 100%)",
-      }}
-    >
-      <div className="absolute inset-0 overflow-hidden">
-        <div
-          className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full blur-3xl animate-pulse"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(244, 197, 66, 0.15) 0%, transparent 70%)",
-          }}
-        ></div>
-        <div
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse delay-1000"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(139, 28, 34, 0.12) 0%, transparent 70%)",
-          }}
-        ></div>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-blue-50/20 pt-24 pb-12">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8">
+        
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl shadow-lg">
+                <Activity className="text-white" size={28} />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold text-slate-800">Financial Insights</h1>
+                <p className="text-slate-600">Analyze your spending patterns and trends</p>
+              </div>
+            </div>
+            
+            {/* View Toggle */}
+            <div className="flex gap-2 bg-white rounded-xl p-1 border border-slate-200 shadow-lg">
+              <button
+                onClick={() => setActiveView("insights")}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                  activeView === "insights"
+                    ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white shadow-lg"
+                    : "text-slate-700 hover:bg-slate-100"
+                }`}
+              >
+                <PieChart size={18} />
+                Insights
+              </button>
+              <button
+                onClick={() => setActiveView("transactions")}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                  activeView === "transactions"
+                    ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white shadow-lg"
+                    : "text-slate-700 hover:bg-slate-100"
+                }`}
+              >
+                <BarChart3 size={18} />
+                Transactions
+              </button>
+            </div>
+          </div>
+        </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto p-4 lg:p-8">
-        <FinancialInsightsHeader
-          activeView={activeView}
-          setActiveView={setActiveView}
-        />
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-emerald-100 rounded-xl">
+                <TrendingUp className="text-emerald-600" size={20} />
+              </div>
+              <p className="text-sm font-medium text-slate-600">Total Income</p>
+            </div>
+            <p className="text-3xl font-bold text-slate-800">₹{totalIncome.toLocaleString()}</p>
+            <p className="text-xs text-emerald-600 mt-1">+12% from last month</p>
+          </div>
 
-        <SummaryCard
-          totalIncome={totalIncome}
-          totalExpenses={totalExpenses}
-          netBalance={netBalance}
-        />
+          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-rose-100 rounded-xl">
+                <TrendingDown className="text-rose-600" size={20} />
+              </div>
+              <p className="text-sm font-medium text-slate-600">Total Expenses</p>
+            </div>
+            <p className="text-3xl font-bold text-slate-800">₹{totalExpenses.toLocaleString()}</p>
+            <p className="text-xs text-rose-600 mt-1">-5% from last month</p>
+          </div>
 
-        <FinancialInsightFilterBar
-          transactions={transactions}
-          activeView={activeView}
-          filters={filters}
-          setFilters={setFilters}
-        />
+          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-blue-100 rounded-xl">
+                <Wallet className="text-blue-600" size={20} />
+              </div>
+              <p className="text-sm font-medium text-slate-600">Net Balance</p>
+            </div>
+            <p className={`text-3xl font-bold ${netBalance >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+              ₹{netBalance.toLocaleString()}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">Available to save</p>
+          </div>
 
-        {/* <FinancialInsightFilterBar
-          transactions={transactions}
-          activeView={activeView}
-        /> */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-purple-100 rounded-xl">
+                <Target className="text-purple-600" size={20} />
+              </div>
+              <p className="text-sm font-medium text-slate-600">Savings Rate</p>
+            </div>
+            <p className="text-3xl font-bold text-slate-800">{savingsRate}%</p>
+            <div className="w-full bg-slate-200 rounded-full h-2 mt-2">
+              <div 
+                className="bg-gradient-to-r from-purple-500 to-blue-600 h-2 rounded-full transition-all"
+                style={{ width: `${Math.min(savingsRate, 100)}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
 
-        {/* Main View */}
+        {/* Insights View */}
         {activeView === "insights" ? (
-          <RenderInsightsContent
-            totalIncome={totalIncome}
-            totalExpenses={totalExpenses}
-            netBalance={netBalance}
-            todoCompletionRate={todoCompletionRate}
-            trendData={trendData}
-            pieData={pieData}
-            budgetComparison={budgetComparison}
-            todoData={todoData}
-          />
+          <div className="space-y-6">
+            
+            {/* Key Metrics Grid */}
+            <div className="grid md:grid-cols-2 gap-6">
+              
+              {/* Spending by Category */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg">
+                <div className="flex items-center gap-2 mb-6">
+                  <PieChart className="text-purple-600" size={20} />
+                  <h3 className="text-xl font-bold text-slate-800">Spending by Category</h3>
+                </div>
+                <div className="space-y-4">
+                  {categoryPercentages.map((cat) => (
+                    <div key={cat.category}>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-semibold text-slate-700">{cat.category}</span>
+                        <span className="text-sm font-bold text-slate-800">₹{cat.amount.toLocaleString()}</span>
+                      </div>
+                      <div className="relative w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+                        <div 
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{ 
+                            width: `${cat.percentage}%`,
+                            backgroundColor: cat.color
+                          }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1">{cat.percentage}% of total spending</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Budget Performance */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg">
+                <div className="flex items-center gap-2 mb-6">
+                  <Target className="text-blue-600" size={20} />
+                  <h3 className="text-xl font-bold text-slate-800">Budget Performance</h3>
+                </div>
+                <div className="space-y-4">
+                  {budgetData.map((item) => {
+                    const percentage = Math.round((item.spent / item.budgeted) * 100);
+                    const isOverBudget = percentage > 100;
+                    return (
+                      <div key={item.category} className="p-4 bg-slate-50 rounded-xl">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-semibold text-slate-700">{item.category}</span>
+                          <span className={`text-sm font-bold ${isOverBudget ? 'text-rose-600' : 'text-emerald-600'}`}>
+                            {percentage}%
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-xs text-slate-600 mb-2">
+                          <span>Spent: ₹{item.spent.toLocaleString()}</span>
+                          <span>Budget: ₹{item.budgeted.toLocaleString()}</span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full transition-all ${
+                              isOverBudget ? 'bg-gradient-to-r from-rose-500 to-rose-600' : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+                            }`}
+                            style={{ width: `${Math.min(percentage, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Insights */}
+            <div className="grid md:grid-cols-3 gap-6">
+              
+              {/* Todo Progress */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg">
+                <div className="flex items-center gap-2 mb-4">
+                  <CheckCircle className="text-emerald-600" size={20} />
+                  <h3 className="text-lg font-bold text-slate-800">Task Progress</h3>
+                </div>
+                <div className="text-center mb-4">
+                  <p className="text-5xl font-bold text-slate-800 mb-2">{todoCompletionRate}%</p>
+                  <p className="text-sm text-slate-600">{completedTodos} of {todoData.length} tasks completed</p>
+                </div>
+                <div className="space-y-2">
+                  {todoData.map((todo) => (
+                    <div key={todo.id} className="flex items-center gap-2 text-sm">
+                      {todo.completed ? (
+                        <CheckCircle className="text-emerald-500" size={16} />
+                      ) : (
+                        <Clock className="text-slate-400" size={16} />
+                      )}
+                      <span className={`${todo.completed ? 'text-slate-600 line-through' : 'text-slate-700'}`}>
+                        {todo.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Financial Health Score */}
+              <div className="bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg">
+                <div className="flex items-center gap-2 mb-4">
+                  <Award className="text-white" size={20} />
+                  <h3 className="text-lg font-bold">Financial Health</h3>
+                </div>
+                <div className="text-center mb-4">
+                  <p className="text-5xl font-bold mb-2">85</p>
+                  <p className="text-sm text-purple-100">Out of 100</p>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-purple-100">Savings</span>
+                    <span className="font-semibold">Good</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-100">Spending</span>
+                    <span className="font-semibold">Excellent</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-purple-100">Budget Adherence</span>
+                    <span className="font-semibold">Good</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg">
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles className="text-amber-600" size={20} />
+                  <h3 className="text-lg font-bold text-slate-800">Quick Stats</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="p-3 bg-emerald-50 rounded-xl">
+                    <p className="text-xs text-emerald-700 mb-1">Highest Expense</p>
+                    <p className="text-lg font-bold text-emerald-900">Housing</p>
+                    <p className="text-sm text-emerald-700">₹15,000</p>
+                  </div>
+                  <div className="p-3 bg-blue-50 rounded-xl">
+                    <p className="text-xs text-blue-700 mb-1">Average Daily Spend</p>
+                    <p className="text-lg font-bold text-blue-900">₹700</p>
+                    <p className="text-sm text-blue-700">Last 30 days</p>
+                  </div>
+                  <div className="p-3 bg-purple-50 rounded-xl">
+                    <p className="text-xs text-purple-700 mb-1">Transactions</p>
+                    <p className="text-lg font-bold text-purple-900">{transactions.length}</p>
+                    <p className="text-sm text-purple-700">This month</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         ) : (
-          <RenderTransactionContent
-            filteredTransactions={filteredTransactions}
-          />
+          // Transactions View
+          <div className="space-y-6">
+            
+            {/* Filters */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg">
+              <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                <div className="relative flex-1 max-w-md w-full">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search transactions..."
+                    value={filters.search}
+                    onChange={(e) => setFilters({...filters, search: e.target.value})}
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none"
+                  />
+                </div>
+
+                <div className="flex gap-2 flex-wrap">
+                  {timeFilters.map((filter) => (
+                    <button
+                      key={filter}
+                      onClick={() => setFilters({...filters, time: filter})}
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                        filters.time === filter
+                          ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white shadow-lg"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      {filter}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${
+                    showFilters 
+                      ? 'bg-gradient-to-br from-purple-500 to-blue-600 text-white shadow-lg' 
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  <Filter size={18} />
+                  Filters
+                  <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+
+              {showFilters && (
+                <div className="mt-6 grid md:grid-cols-2 gap-4 pt-6 border-t border-slate-200">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Category</label>
+                    <select
+                      value={filters.category}
+                      onChange={(e) => setFilters({...filters, category: e.target.value})}
+                      className="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none"
+                    >
+                      {categories.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Type</label>
+                    <select
+                      value={filters.type}
+                      onChange={(e) => setFilters({...filters, type: e.target.value})}
+                      className="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-purple-500 outline-none"
+                    >
+                      {typeFilters.map(type => (
+                        <option key={type} value={type}>
+                          {type === 'All' ? 'All Types' : type.charAt(0).toUpperCase() + type.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Transaction List */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg">
+              <h3 className="text-xl font-bold text-slate-800 mb-6">
+                Filtered Transactions ({filteredTransactions.length})
+              </h3>
+              <div className="space-y-3">
+                {filteredTransactions.map((transaction) => {
+                  const isIncome = transaction.type === "income";
+                  return (
+                    <div
+                      key={transaction.id}
+                      className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex-1">
+                        <h4 className="font-bold text-slate-800">{transaction.description}</h4>
+                        <div className="flex items-center gap-3 text-sm text-slate-600 mt-1">
+                          <span>{transaction.merchant}</span>
+                          <span className="text-slate-400">•</span>
+                          <span className="flex items-center gap-1">
+                            <Calendar size={14} />
+                            {new Date(transaction.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span 
+                          className="px-3 py-1 rounded-full text-xs font-semibold"
+                          style={{ 
+                            backgroundColor: `${transaction.color}20`,
+                            color: transaction.color 
+                          }}
+                        >
+                          {transaction.category}
+                        </span>
+                        <div className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold ${
+                          isIncome ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
+                        }`}>
+                          {isIncome ? (
+                            <ArrowUpRight size={18} className="text-emerald-600" />
+                          ) : (
+                            <ArrowDownLeft size={18} className="text-rose-600" />
+                          )}
+                          <span>{isIncome ? '+' : ''}₹{Math.abs(transaction.amount).toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
@@ -255,6 +555,264 @@ const FinancialInsightsDashboard = () => {
 };
 
 export default FinancialInsightsDashboard;
+
+
+// import React, { act, useState } from "react";
+// import FinancialInsightsHeader from "./FinancialInsightsHeader";
+// import SummaryCard from "./SummaryCard";
+// import transactionData from "../TransactionHistory/transactionData.js";
+// import FinancialInsightFilterBar from "./FinancialInsightFilterBar.jsx";
+// import RenderInsightsContent from "./renderInsightsContent.jsx";
+// import RenderTransactionContent from "./RenderTransactionContent.jsx";
+// // import KeyMetrics from "./KeyMetrics";
+// // import SpendingTrendChart from "./SpendingTrendChart";
+// // import CategoryBreakdownChart from "./CategoryBreakdownChart";
+// // import BudgetPerformanceChart from "./BudgetPerformanceChart";
+// // import TodoProgress from "./TodoProgress";
+// // import TransactionsList from "./TransactionsList";
+// import { transactionsData, budgetData, todoData } from "./mockData";
+// // import categoryData from "./categoryData";
+
+// const FinancialInsightsDashboard = () => {
+//   const [activeView, setActiveView] = useState("insights");
+//   const [transactions] = useState(transactionData);
+//   const [filters, setFilters] = useState({
+//     search: "",
+//     time: "All",
+//     type: "All",
+//     category: "All",
+//     insight: "All",
+//   });
+
+//   const totalIncome = Number(
+//     transactions
+//       .filter((t) => t.type === "income")
+//       .reduce((sum, t) => sum + (t.amount || 0), 0)
+//   );
+
+//   const totalExpenses = Math.abs(
+//     transactions
+//       .filter((t) => t.type === "expense")
+//       .reduce((sum, t) => sum + (t.amount || 0), 0)
+//   );
+
+//   const netBalance = totalIncome - totalExpenses;
+
+//   const getFilteredTransactions = () => {
+//     return transactions.filter((transaction) => {
+//       const search = filters.search.toLowerCase();
+
+//       const matchesSearch =
+//         transaction.description.toLowerCase().includes(search) ||
+//         transaction.merchant.toLowerCase().includes(search) ||
+//         String(transaction.amount).includes(search);
+
+//       const matchesCategory =
+//         filters.category === "All" || transaction.category === filters.category;
+
+//       const matchesType =
+//         filters.type === "All" || transaction.type === filters.type;
+
+//       let matchesTime = true;
+//       if (filters.time !== "All") {
+//         const transactionDate = new Date(transaction.date);
+//         const today = new Date();
+//         const daysDiff = Math.floor(
+//           (today - transactionDate) / (1000 * 60 * 60 * 24)
+//         );
+
+//         switch (filters.time) {
+//           case "Today":
+//             matchesTime = daysDiff === 0;
+//             break;
+//           case "7 Days":
+//             matchesTime = daysDiff <= 7;
+//             break;
+//           case "30 Days":
+//             matchesTime = daysDiff <= 30;
+//             break;
+//           default:
+//             matchesTime = true;
+//         }
+//       }
+
+//       return matchesSearch && matchesCategory && matchesType && matchesTime;
+//     });
+//   };
+
+//   const filteredTransactions = getFilteredTransactions();
+
+//   const completedTodos = todoData.filter(
+//     (todo) => todo.completed === true
+//   ).length;
+//   const todoCompletionRate = (completedTodos / todoData.length) * 100;
+
+//   const generateInsightsData = () => {
+//     // === Daily Trend (Income vs Expenses by Date) ===
+//     const trendMap = {};
+
+//     transactions.forEach(({ date, type, amount }) => {
+//       if (!trendMap[date]) {
+//         trendMap[date] = { date, income: 0, expenses: 0 };
+//       }
+//       if (type === "income") {
+//         trendMap[date].income += amount;
+//       } else {
+//         trendMap[date].expenses += Math.abs(amount);
+//       }
+//     });
+
+//     const trendData = Object.values(trendMap).sort(
+//       (a, b) => new Date(a.date) - new Date(b.date)
+//     );
+
+//     // === Category Breakdown (Pie Chart Data) ===
+//     const categoryMap = {};
+
+//     transactions.forEach(({ category, amount, color }) => {
+//       if (!categoryMap[category]) {
+//         categoryMap[category] = { category, amount: 0, color };
+//       }
+//       categoryMap[category].amount += Math.abs(amount);
+//     });
+
+//     const pieData = Object.values(categoryMap);
+
+//     // === Budget vs Actual Comparison ===
+//     const budgetComparison = budgetData.map((item) => ({
+//       ...item,
+//       variance:
+//         item.category === "Income"
+//           ? item.actual - item.budgeted
+//           : item.budgeted - item.spent,
+//     }));
+
+//     return { trendData, pieData, budgetComparison };
+//   };
+
+//   const { trendData, pieData, budgetComparison } = generateInsightsData();
+
+//   // const generateInsightsData = () => {
+//   //   // Use all transactions directly
+//   //   const allTransactions = transactions;
+
+//   //   // Daily spending trend
+//   //   const dailyData = allTransactions.reduce((acc, transaction) => {
+//   //     const date = transaction.date;
+//   //     if (!acc[date]) {
+//   //       acc[date] = { date, income: 0, expenses: 0 };
+//   //     }
+//   //     if (transaction.type === "income") {
+//   //       acc[date].income += transaction.amount;
+//   //     } else {
+//   //       acc[date].expenses += Math.abs(transaction.amount);
+//   //     }
+//   //     return acc;
+//   //   }, {});
+
+//   //   const trendData = Object.values(dailyData).sort(
+//   //     (a, b) => new Date(a.date) - new Date(b.date)
+//   //   );
+
+//   //   // Category breakdown
+//   //   const categoryData = allTransactions.reduce((acc, transaction) => {
+//   //     if (!acc[transaction.category]) {
+//   //       acc[transaction.category] = {
+//   //         category: transaction.category,
+//   //         amount: 0,
+//   //         color: transaction.color,
+//   //       };
+//   //     }
+//   //     acc[transaction.category].amount += Math.abs(transaction.amount);
+//   //     return acc;
+//   //   }, {});
+
+//   //   const pieData = Object.values(categoryData);
+
+//   //   // Budget vs Actual
+//   //   const budgetComparison = budgetData.map((item) => ({
+//   //     ...item,
+//   //     variance:
+//   //       item.category === "Income"
+//   //         ? item.actual - item.budgeted
+//   //         : item.budgeted - item.spent,
+//   //   }));
+
+//   //   return { trendData, pieData, budgetComparison };
+//   // };
+
+//   return (
+//     <div
+//       className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-green-700 relative overflow-hidden"
+//       style={{
+//         background:
+//           "linear-gradient(135deg, #22543D 0%, #2D5A41 50%, #1A4B35 100%)",
+//       }}
+//     >
+//       <div className="absolute inset-0 overflow-hidden">
+//         <div
+//           className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full blur-3xl animate-pulse"
+//           style={{
+//             background:
+//               "radial-gradient(circle, rgba(244, 197, 66, 0.15) 0%, transparent 70%)",
+//           }}
+//         ></div>
+//         <div
+//           className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse delay-1000"
+//           style={{
+//             background:
+//               "radial-gradient(circle, rgba(139, 28, 34, 0.12) 0%, transparent 70%)",
+//           }}
+//         ></div>
+//       </div>
+
+//       <div className="relative z-10 max-w-7xl mx-auto p-4 lg:p-8">
+//         <FinancialInsightsHeader
+//           activeView={activeView}
+//           setActiveView={setActiveView}
+//         />
+
+//         <SummaryCard
+//           totalIncome={totalIncome}
+//           totalExpenses={totalExpenses}
+//           netBalance={netBalance}
+//         />
+
+//         <FinancialInsightFilterBar
+//           transactions={transactions}
+//           activeView={activeView}
+//           filters={filters}
+//           setFilters={setFilters}
+//         />
+
+//         {/* <FinancialInsightFilterBar
+//           transactions={transactions}
+//           activeView={activeView}
+//         /> */}
+
+//         {/* Main View */}
+//         {activeView === "insights" ? (
+//           <RenderInsightsContent
+//             totalIncome={totalIncome}
+//             totalExpenses={totalExpenses}
+//             netBalance={netBalance}
+//             todoCompletionRate={todoCompletionRate}
+//             trendData={trendData}
+//             pieData={pieData}
+//             budgetComparison={budgetComparison}
+//             todoData={todoData}
+//           />
+//         ) : (
+//           <RenderTransactionContent
+//             filteredTransactions={filteredTransactions}
+//           />
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default FinancialInsightsDashboard;
 
 // // import React, { useState, useEffect } from "react";
 // // import {

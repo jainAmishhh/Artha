@@ -1,117 +1,1109 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>XseFi - Expense Manager</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-[#181818] text-white font-sans">
+import React, { useState } from "react";
+import { DollarSign, Shield, Sparkles, Target, TrendingUp } from "lucide-react";
+import FormContainer from "./FormContainer";
 
-    <!-- Navbar -->
-    <header class="flex justify-between items-center px-8 py-6">
-      <div class="text-2xl font-bold text-white">
-        <span class="text-white">Xse</span><span class="text-orange-400">Fi</span>
-      </div>
-      <nav class="space-x-6 text-gray-300 hidden md:block">
-        <a href="#" class="hover:text-white">Home</a>
-        <a href="#" class="hover:text-white">Service</a>
-        <a href="#" class="hover:text-white">Features</a>
-        <a href="#" class="hover:text-white">Pricing</a>
-        <a href="#" class="hover:text-white">About Us</a>
-      </nav>
-      <div class="space-x-4 hidden md:block">
-        <button class="text-white">Log In</button>
-        <button class="border border-orange-400 text-orange-400 px-4 py-1 rounded hover:bg-orange-400 hover:text-black transition">
-          Sign Up
-        </button>
-      </div>
-    </header>
+const AuthPage = ({ onLogin }) => {
+  const features = [
+    {
+      icon: TrendingUp,
+      title: "Smart Analytics",
+      description: "Personalized insights into your spending patterns",
+    },
+    {
+      icon: DollarSign,
+      title: "Budget Tracking",
+      description: "Set and monitor budgets with real-time alerts",
+    },
+    {
+      icon: Target,
+      title: "Goal Planning",
+      description: "Create and track your financial objectives",
+    },
+    {
+      icon: Shield,
+      title: "Secure & Private",
+      description: "Bank-level security for your financial data",
+    },
+  ];
 
-    <!-- Hero Section -->
-    <section class="grid md:grid-cols-2 items-center px-8 py-12 gap-10">
-      <!-- Text Content -->
-      <div>
-        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-6">
-          Manage Your <br />
-          Expenses Easily <br />
-          With <span class="text-orange-400">XseFi</span>
-        </h1>
-        <p class="text-gray-400 mb-6 max-w-md">
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. It has been the industry's standard dummy text ever since the 1500s.
+  return (
+    <div
+      className="min-h-screen bg-gradient-to-br from-green-900 via-green-800 to-green-700 relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(135deg, #22543D 0%, #2D5A41 50%, #1A4B35 100%)",
+      }}
+    >
+      {/* Animated Background Elements */}
+      <div className="relative min-h-screen overflow-auto">
+        <div
+          className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full blur-3xl animate-pulse"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(244, 197, 66, 0.15) 0%, transparent 70%)",
+          }}
+        ></div>
+        <div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse delay-1000"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(139, 28, 34, 0.12) 0%, transparent 70%)",
+          }}
+        ></div>
+        <div
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full blur-3xl animate-pulse delay-500"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(5, 150, 105, 0.1) 0%, transparent 70%)",
+          }}
+        ></div>
+
+        <div className="flex flex-col lg:flex-row relative z-10">
+          {/* Left Side - Features */}
+          <div className="hidden lg:flex lg:w-1/2 flex-col justify-center p-12">
+            <div className="max-w-full">
+              <div className="flex items-center gap-3 mb-8">
+                <div
+                  className="p-3 rounded-2xl shadow-lg"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #F4C542 0%, #E6B73A 100%)",
+                  }}
+                >
+                  <Sparkles className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h1
+                    className="text-3xl font-bold"
+                    style={{ color: "#FAFAFA" }}
+                  >
+                    Artha
+                  </h1>
+                  <p
+                    className="text-sm"
+                    style={{ color: "rgba(250, 250, 250, 0.7)" }}
+                  >
+                    Smart Financial Management
+                  </p>
+                </div>
+              </div>
+
+              <h2
+                className="text-4xl font-bold mb-6"
+                style={{ color: "#FAFAFA" }}
+              >
+                Take Control of Your
+                <span className="block" style={{ color: "#F4C542" }}>
+                  Financial Future
+                </span>
+              </h2>
+
+              <p
+                className="text-lg mb-8"
+                style={{ color: "rgba(250, 250, 250, 0.8)" }}
+              >
+                Join Arhta with thousands of users who have transformed their
+                financial lives with our Personalized-powered insights and smart
+                budgeting tools.
+              </p>
+
+              <div className="space-y-6">
+                {features.map((feature, index) => {
+                  const IconComponent = feature.icon;
+                  return (
+                    <div key={index} className="flex items-start gap-4 group">
+                      <div
+                        className="p-3 rounded-2xl group-hover:scale-110 transition-transform duration-300"
+                        style={{ background: "rgba(244, 197, 66, 0.2)" }}
+                      >
+                        <IconComponent
+                          className="w-6 h-6"
+                          style={{ color: "#F4C542" }}
+                        />
+                      </div>
+                      <div>
+                        <h3
+                          className="font-semibold mb-1"
+                          style={{ color: "#FAFAFA" }}
+                        >
+                          {feature.title}
+                        </h3>
+                        <p
+                          className="text-sm"
+                          style={{ color: "rgba(250, 250, 250, 0.7)" }}
+                        >
+                          {feature.description}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Side */}
+          <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
+            <div className="w-full max-w-md">
+              <FormContainer onLogin={onLogin} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AuthPage;
+
+
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Lock } from "lucide-react";
+
+// Buttons
+import NumberLoginButton from "./Buttons/NumberLoginButton";
+import GoogleLoginButton from "./Buttons/GoogleLoginButton";
+import EmailLoginButton from "./Buttons/EmailLoginButton";
+
+// Forms
+import EmailLoginForm from "./Forms/EmailLoginForm";
+import GoogleLoginForm from "./Forms/GoogleLoginForm";
+import NumberLoginForm from "./Forms/NumberLoginForm";
+
+// Handlers
+import {
+  handleSignup,
+  handleLogin,
+  handleSendOtp,
+  handleVerifyOtp,
+} from "../AuthPage/formHandlers";
+
+const FormContainer = ({ onLogin }) => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    fullname: "",
+    number: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [loginMethod, setLoginMethod] = useState("default");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // OTP states
+  const [otpSent, setIsOtpSent] = useState(false);
+  const [otpError, setOtpError] = useState("");
+  const [otpVerified, setOtpVerified] = useState(false);
+
+  // Error state for inline messages
+  const [formError, setFormError] = useState("");
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const navigate = useNavigate();
+
+  // Actual submit logic
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setFormError(""); // reset
+
+    try {
+      let response;
+
+      if (isLogin) {
+        response = await handleLogin(
+          {
+            email: formData.email,
+            password: formData.password,
+          },
+          onLogin
+        );
+      } else {
+        response = await handleSignup(formData, onLogin);
+      }
+
+      console.log("✅ Auth Success:", response);
+
+      if (onLogin) onLogin(response);
+
+      navigate("/");
+    } catch (err) {
+      console.error("❌ Auth Error:", err);
+      setFormError(err.message || "Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSendOtp = async () => {
+    setIsLoading(true);
+    try {
+      const res = await handleSendOtp(formData.number);
+      setIsOtpSent(true);
+      setOtpError("");
+      console.log("✅ OTP sent:", res);
+    } catch (err) {
+      setOtpError(err.message || "Failed to send OTP");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onVerifyOtp = async (enteredOtp) => {
+    try {
+      const res = await handleVerifyOtp(
+        formData.number,
+        enteredOtp,
+        formData.fullname || "Anonymous User"
+      );
+      setOtpVerified(true);
+      setOtpError("");
+      console.log("✅ OTP verified:", res);
+
+      if (onLogin) onLogin();
+
+      navigate("/");
+    } catch (err) {
+      setOtpError(err.message || "Failed to verify OTP");
+    }
+  };
+
+  return (
+    <div
+      className="backdrop-blur-2xl border rounded-3xl p-8 shadow-2xl"
+      style={{
+        background: "rgba(250, 250, 250, 0.08)",
+        borderColor: "rgba(244, 197, 66, 0.2)",
+      }}
+    >
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div
+          className="p-4 rounded-2xl mx-auto w-fit mb-4"
+          style={{ background: "rgba(244, 197, 66, 0.2)" }}
+        >
+          <Lock className="w-8 h-8" style={{ color: "#F4C542" }} />
+        </div>
+        <h2 className="text-2xl font-bold mb-2" style={{ color: "#FAFAFA" }}>
+          {isLogin ? "Welcome Back!" : "Create Account"}
+        </h2>
+        <p className="text-sm" style={{ color: "rgba(250, 250, 250, 0.7)" }}>
+          {isLogin
+            ? "Sign in to access your financial dashboard"
+            : "Join thousands of users managing their finances smarter"}
         </p>
-        <div class="flex gap-4">
-          <button class="bg-orange-400 px-6 py-2 rounded text-black font-semibold">Let's Talk</button>
-          <button class="border border-white px-6 py-2 rounded text-white hover:bg-white hover:text-black">View Demo</button>
+      </div>
+
+      {/* Social Login */}
+      {/* Social Login */}
+      <div className="space-y-3 mb-6">
+        {loginMethod === "default" && (
+          <>
+            <GoogleLoginButton
+              onClick={() => setLoginMethod("google")}
+              active={loginMethod === "google"}
+            />
+            <NumberLoginButton onClick={() => setLoginMethod("number")} />
+          </>
+        )}
+
+        {loginMethod === "google" && (
+          <>
+            <EmailLoginButton onClick={() => setLoginMethod("default")} />
+            <NumberLoginButton onClick={() => setLoginMethod("number")} />
+          </>
+        )}
+
+        {loginMethod === "number" && (
+          <>
+            <GoogleLoginButton
+              onClick={() => setLoginMethod("google")}
+              active={loginMethod === "google"}
+            />
+            <EmailLoginButton onClick={() => setLoginMethod("default")} />
+          </>
+        )}
+      </div>
+
+      {/* Divider */}
+      <div className="relative mb-6">
+        <div className="absolute inset-0 flex items-center">
+          <div
+            className="w-full border-t"
+            style={{ borderColor: "rgba(244, 197, 66, 0.2)" }}
+          ></div>
         </div>
       </div>
 
-      <!-- Graphical Section -->
-      <div class="relative w-full h-full">
-        <!-- Total Expenses Card -->
-        <div class="absolute top-0 left-0 bg-[#c9d8cb] text-black p-4 rounded-lg w-64 shadow-md">
-          <p class="text-sm">Total Expenses</p>
-          <h2 class="text-2xl font-bold">$1,220.00</h2>
-          <p class="text-xs text-gray-700">This month <span class="text-green-600">+10%</span></p>
-        </div>
+      {/* Form */}
+      <div className="space-y-6">
+        {loginMethod === "default" && (
+          <EmailLoginForm
+            isLogin={isLogin}
+            formData={formData}
+            handleInputChange={handleInputChange}
+            handleSubmit={handleSubmit}
+            isLoading={isLoading}
+          />
+        )}
 
-        <!-- Total Revenue Card -->
-        <div class="absolute top-28 right-0 bg-[#f8936e] text-black p-4 rounded-lg w-64 shadow-md">
-          <p class="text-sm">Total Revenue</p>
-          <h2 class="text-2xl font-bold">$8,675.00</h2>
-          <p class="text-xs text-gray-700">This month <span class="text-red-600">-36%</span></p>
-        </div>
+        {loginMethod === "google" && <GoogleLoginForm />}
 
-        <!-- Analytics Graph -->
-        <div class="absolute top-12 left-40 w-64 h-36 bg-white rounded-md shadow-md p-2">
-          <h3 class="text-sm text-black font-semibold mb-1">Analytics</h3>
-          <div class="flex justify-between items-end gap-2 h-24">
-            <div class="bg-orange-400 w-4 h-16"></div>
-            <div class="bg-green-500 w-4 h-10"></div>
-            <div class="bg-orange-400 w-4 h-20"></div>
-            <div class="bg-green-500 w-4 h-8"></div>
-            <div class="bg-orange-400 w-4 h-16"></div>
+        {loginMethod === "number" && (
+          <NumberLoginForm
+            isLogin={isLogin}
+            formData={formData}
+            handleInputChange={handleInputChange}
+            handleSubmit={handleSubmit}
+            handleSendOtp={onSendOtp}
+            handleVerifyOtp={onVerifyOtp}
+            isLoading={isLoading}
+            otpSent={otpSent}
+            otpError={otpError}
+            otpVerified={otpVerified}
+          />
+        )}
+      </div>
+
+      {/* Show error messages */}
+      {formError && (
+        <p className="mt-4 text-red-400 text-center text-sm">{formError}</p>
+      )}
+
+      {/* Footer */}
+      <div className="mt-6 text-center">
+        <p className="text-sm" style={{ color: "rgba(250, 250, 250, 0.7)" }}>
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <button
+            onClick={() => setIsLogin(!isLogin)}
+            className="font-semibold hover:underline transition-all duration-300"
+            style={{ color: "#F4C542" }}
+          >
+            {isLogin ? "Sign up" : "Sign in"}
+          </button>
+        </p>
+      </div>
+
+      {!isLogin && (
+        <div className="mt-4 text-center">
+          <p className="text-xs" style={{ color: "rgba(250, 250, 250, 0.5)" }}>
+            By creating an account, you agree to our{" "}
+            <a href="#" className="underline" style={{ color: "#F4C542" }}>
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a href="#" className="underline" style={{ color: "#F4C542" }}>
+              Privacy Policy
+            </a>
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FormContainer;
+
+
+// client/src/utils/formHandlers.js
+
+export const handleSignup = async (formData) => {
+  try {
+    if (formData.password !== formData.confirmPassword) {
+      throw new Error("Passwords do not match");
+    }
+
+    const res = await fetch("http://localhost:5000/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullname: formData.fullname,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword, 
+        phonenumber: formData.number || "",
+      }),
+    });
+
+    const data = await res.json();
+    console.log("📌 Signup response:", data);
+
+    if (!res.ok) throw new Error(data.message || "Signup failed");
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    return data;
+  } catch (err) {
+    console.error("❌ Signup error:", err);
+    throw err;
+  }
+};
+
+export const handleLogin = async (formData) => {
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData), // { email, password }
+    });
+
+    const data = await res.json();
+    console.log("📌 Login response:", data);
+
+    if (!res.ok) throw new Error(data.message || "Login failed");
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    return data;
+  } catch (err) {
+    console.error("❌ Login error:", err);
+    throw err;
+  }
+};
+
+export const handleSendOtp = async (phoneNumber) => {
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phonenumber: phoneNumber }),
+    });
+
+    const data = await res.json();
+    console.log("📌 OTP sent response:", data);
+
+    if (!res.ok) throw new Error(data.message || "Failed to send OTP");
+    return data;
+  } catch (err) {
+    console.error("❌ OTP send error:", err);
+    throw err;
+  }
+};
+
+export const handleVerifyOtp = async (
+  phoneNumber,
+  otp,
+  fullname = "Anonymous User"
+) => {
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phonenumber: phoneNumber, otp, fullname }),
+    });
+
+    const data = await res.json();
+    console.log("📌 OTP verify response:", data);
+
+    if (!res.ok) throw new Error(data.message || "OTP verification failed");
+    return data;
+  } catch (err) {
+    console.error("❌ OTP verify error:", err);
+    throw err;
+  }
+};
+
+
+import React from "react";
+import { MdEmail } from "react-icons/md";
+
+const EmailLoginButton = ({ onClick }) => {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center justify-center gap-3 p-3 rounded-2xl border hover:scale-105 transition-all duration-300"
+      style={{
+        background: "rgba(250, 250, 250, 0.05)",
+        borderColor: "rgba(244, 197, 66, 0.3)",
+        color: "#FAFAFA",
+      }}
+    >
+      <MdEmail className="w-5 h-5" />
+      <span>Continue with Email</span>
+    </button>
+  );
+};
+
+export default EmailLoginButton;
+
+
+import React from "react";
+import { FcGoogle } from "react-icons/fc";
+
+const GoogleLoginButton = ({ onClick, active }) => {
+  return (
+    <button
+      onClick={onClick}
+      className={
+        active
+          ? "w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md hover:shadow-lg bg-gradient-to-br from-slate-900 via-teal-900 to-slate-800 shadow-black"
+          : "w-full flex items-center justify-center gap-3 p-3 rounded-2xl border hover:scale-105 transition-all duration-300"
+      }
+      style={{
+        background: active ? "" : "rgba(250, 250, 250, 0.05)",
+        borderColor: active ? "" : "rgba(66, 133, 244, 0.3)",
+        color: "#FAFAFA",
+      }}
+    >
+      <FcGoogle className="w-5 h-5" />
+      {!active && <span>Continue with Google</span>}
+    </button>
+  );
+};
+
+export default GoogleLoginButton;
+
+
+import React from "react";
+import { MdPhoneAndroid } from "react-icons/md";
+
+const NumberLoginButton = ({ onClick }) => {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center justify-center gap-3 p-3 rounded-2xl border hover:scale-105 transition-all duration-300"
+      style={{
+        background: "rgba(250, 250, 250, 0.05)",
+        borderColor: "rgba(76, 175, 80, 0.3)",
+        color: "#FAFAFA",
+      }}
+    >
+      <MdPhoneAndroid className="w-5 h-5" />
+      <span>Continue with Phone Number</span>
+    </button>
+  );
+};
+
+export default NumberLoginButton;
+
+
+import React, { useState } from "react";
+import { ArrowRight, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+
+const EmailLoginForm = ({
+  isLogin,
+  formData,
+  handleInputChange,
+  handleSubmit,
+  isLoading
+}) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  return (
+    <>
+      {/* Full name */}
+      {!isLogin && (
+        <div>
+          <label
+            className="block text-sm font-medium mb-2"
+            style={{ color: "#FAFAFA" }}
+          >
+            Full Name
+          </label>
+          <div className="relative">
+            <User
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5"
+              style={{ color: "rgba(250, 250, 250, 0.5)" }}
+            />
+            <input
+              type="text"
+              name="fullname"
+              value={formData.fullname}
+              onChange={handleInputChange}
+              placeholder="Enter your full name"
+              className="w-full pl-12 pr-4 py-3 rounded-2xl border focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
+              style={{
+                background: "rgba(250, 250, 250, 0.1)",
+                borderColor: "rgba(244, 197, 66, 0.3)",
+                color: "#FAFAFA",
+              }}
+              required
+            />
           </div>
         </div>
+      )}
 
-        <!-- Card Info -->
-        <div class="absolute bottom-12 left-0 bg-[#b9d0c5] text-black p-4 rounded-lg w-72 shadow-md">
-          <p class="text-sm font-semibold">VISA **** 7602</p>
-          <p class="text-xs mt-2">Cardholder: <strong>Emily Watson</strong></p>
-          <p class="text-xs">Expiry: 06/12/2023</p>
-        </div>
-
-        <!-- Transactions -->
-        <div class="absolute bottom-0 right-0 w-72 bg-[#1e1e1e] p-4 rounded-lg text-sm text-white">
-          <h4 class="font-bold text-white mb-2">Latest Transactions</h4>
-          <div class="flex justify-between items-center mb-2">
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center text-xs">+</div>
-              <span>Income: Salary Oct</span>
-            </div>
-            <span class="text-green-400">+$1200</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-xs">-</div>
-              <span>Electric Bill</span>
-            </div>
-            <span class="text-red-400">-$480</span>
-          </div>
+      {/* Email */}
+      <div>
+        <label
+          className="block text-sm font-medium mb-2"
+          style={{ color: "#FAFAFA" }}
+        >
+          Email Address
+        </label>
+        <div className="relative">
+          <Mail
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5"
+            style={{ color: "rgba(250, 250, 250, 0.5)" }}
+          />
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="Enter your email"
+            className="w-full pl-12 pr-4 py-3 rounded-2xl border focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
+            style={{
+              background: "rgba(250, 250, 250, 0.1)",
+              borderColor: "rgba(244, 197, 66, 0.3)",
+              color: "#FAFAFA",
+            }}
+            required
+          />
         </div>
       </div>
-    </section>
 
-    <!-- Logos -->
-    <footer class="px-8 py-6 mt-12">
-      <div class="flex flex-wrap justify-center gap-8 opacity-40">
-        <img src="https://via.placeholder.com/100x20?text=SEVERIN" alt="" />
-        <img src="https://via.placeholder.com/100x20?text=CANALI" alt="" />
-        <img src="https://via.placeholder.com/100x20?text=PRAXAIR" alt="" />
-        <img src="https://via.placeholder.com/100x20?text=SolarCity" alt="" />
-        <img src="https://via.placeholder.com/100x20?text=CONNEX" alt="" />
-        <img src="https://via.placeholder.com/100x20?text=BRICKWORKS" alt="" />
+      {/* Password */}
+      <div>
+        <label
+          className="block text-sm font-medium mb-2"
+          style={{ color: "#FAFAFA" }}
+        >
+          Password
+        </label>
+        <div className="relative">
+          <Lock
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5"
+            style={{ color: "rgba(250, 250, 250, 0.5)" }}
+          />
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            placeholder="Enter your password"
+            className="w-full pl-12 pr-12 py-3 rounded-2xl border focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
+            style={{
+              background: "rgba(250, 250, 250, 0.1)",
+              borderColor: "rgba(244, 197, 66, 0.3)",
+              color: "#FAFAFA",
+            }}
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2"
+          >
+            {showPassword ? (
+              <EyeOff
+                className="w-5 h-5"
+                style={{ color: "rgba(250, 250, 250, 0.5)" }}
+              />
+            ) : (
+              <Eye
+                className="w-5 h-5"
+                style={{ color: "rgba(250, 250, 250, 0.5)" }}
+              />
+            )}
+          </button>
+        </div>
       </div>
-    </footer>
-  </body>
-</html>
+
+      {/* Confirm Password */}
+      {!isLogin && (
+        <div>
+          <label
+            className="block text-sm font-medium mb-2"
+            style={{ color: "#FAFAFA" }}
+          >
+            Confirm Password
+          </label>
+          <div className="relative">
+            <Lock
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5"
+              style={{ color: "rgba(250, 250, 250, 0.5)" }}
+            />
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              placeholder="Confirm your password"
+              className="w-full pl-12 pr-12 py-3 rounded-2xl border focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
+              style={{
+                background: "rgba(250, 250, 250, 0.1)",
+                borderColor: "rgba(244, 197, 66, 0.3)",
+                color: "#FAFAFA",
+              }}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2"
+            >
+              {showConfirmPassword ? (
+                <EyeOff
+                  className="w-5 h-5"
+                  style={{ color: "rgba(250, 250, 250, 0.5)" }}
+                />
+              ) : (
+                <Eye
+                  className="w-5 h-5"
+                  style={{ color: "rgba(250, 250, 250, 0.5)" }}
+                />
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Remember me */}
+      {isLogin && (
+        <div className="flex items-center justify-between">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              className="rounded border-gray-300 text-yellow-400 focus:ring-yellow-400"
+            />
+            <span
+              className="ml-2 text-sm"
+              style={{ color: "rgba(250, 250, 250, 0.7)" }}
+            >
+              Remember me
+            </span>
+          </label>
+          <button
+            type="button"
+            className="text-sm hover:underline transition-all duration-300"
+            style={{ color: "#F4C542" }}
+          >
+            Forgot password?
+          </button>
+        </div>
+      )}
+
+      {/* Submit button */}
+      <button
+        type="button"
+        onClick={handleSubmit}
+        disabled={isLoading}
+        className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-2xl font-semibold text-white shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{
+          background: "linear-gradient(135deg, #F4C542 0%, #E6B73A 100%)",
+        }}
+      >
+        {isLoading ? (
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+        ) : (
+          <>
+            <span>{isLogin ? "Sign In" : "Create Account"}</span>
+            <ArrowRight className="w-5 h-5" />
+          </>
+        )}
+      </button>
+    </>
+  );
+};
+
+export default EmailLoginForm;
+
+
+import React, { useState } from "react";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import { Shield, CheckCircle } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
+
+const GoogleLoginForm = ({ isLogin = true, onGoogleAuth, onBack }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleGoogleSuccess = (credentialResponse) => {
+    try {
+      setIsLoading(true);
+
+      const userObject = jwtDecode(credentialResponse.credential);
+      console.log("✅ Google User:", userObject);
+
+      if (onGoogleAuth) onGoogleAuth(userObject);
+
+      setIsLoading(false);
+    } catch (err) {
+      console.error("❌ Failed to decode Google token", err);
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    console.error("❌ Google Login Failed");
+  };
+
+  return (
+    <div className="space-y-6 p-6 bg-white/10 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20">
+      {/* Back Button */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="text-sm text-yellow-300 hover:underline mb-3"
+        >
+          ← Back
+        </button>
+      )}
+
+      {/* Google Logo Circle */}
+      <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-teal-500 to-emerald-600 rounded-full mx-auto">
+        <FcGoogle className="w-10 h-10" />
+      </div>
+
+      {/* Title */}
+      <div className="text-center space-y-1">
+        <h3 className="text-xl font-bold text-white">
+          {isLogin ? "Continue with Google" : "Sign up with Google"}
+        </h3>
+        <p className="text-gray-200 text-sm">
+          {isLogin
+            ? "Sign in using your Google account"
+            : "Create your account instantly"}
+        </p>
+      </div>
+
+      {/* OAuth Button */}
+      <div className="flex justify-center">
+        {isLoading ? (
+          <button
+            disabled
+            className="w-full flex items-center justify-center gap-3 p-3 rounded-xl bg-white text-black shadow-lg"
+          >
+            <div className="animate-spin h-5 w-5 border-2 border-gray-400 border-t-transparent rounded-full"></div>
+            Connecting...
+          </button>
+        ) : (
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            theme="outline"
+            size="large"
+            shape="pill"
+            text={isLogin ? "signin_with" : "signup_with"}
+          />
+        )}
+      </div>
+
+      {/* Footer Badges */}
+      <div className="flex items-center gap-4 text-xs text-gray-200 justify-center pt-2">
+        <div className="flex items-center gap-1">
+          <Shield size={14} className="text-green-400" />
+          <span>Secure OAuth</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <CheckCircle size={14} className="text-teal-300" />
+          <span>Instant Access</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default GoogleLoginForm;
+
+
+import React from "react";
+import { ArrowRight, Hourglass, Phone, User, Send, CheckCircle } from "lucide-react";
+
+const NumberLoginForm = ({
+  isLogin,
+  formData,
+  handleInputChange,
+  handleSubmit,
+  handleSendOtp,
+  handleVerifyOtp,
+  otpError,
+  otpVerified,
+  isLoading,
+  otpSent,
+}) => {
+  return (
+    <>
+      {/* Full name (only for sign up) */}
+      {!isLogin && (
+        <div>
+          <label
+            className="block text-sm font-medium mb-2"
+            style={{ color: "#FAFAFA" }}
+          >
+            Full Name
+          </label>
+          <div className="relative">
+            <User
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5"
+              style={{ color: "rgba(250, 250, 250, 0.5)" }}
+            />
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              placeholder="Enter your full name"
+              className="w-full pl-12 pr-4 py-3 rounded-2xl border focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
+              style={{
+                background: "rgba(250, 250, 250, 0.1)",
+                borderColor: "rgba(244, 197, 66, 0.3)",
+                color: "#FAFAFA",
+              }}
+              required
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Phone Number */}
+      <div>
+        <label
+          className="block text-sm font-medium mb-2"
+          style={{ color: "#FAFAFA" }}
+        >
+          Phone Number
+        </label>
+        <div className="relative">
+          <Phone
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5"
+            style={{ color: "rgba(250, 250, 250, 0.5)" }}
+          />
+          <input
+            type="tel"
+            name="number"
+            value={formData.number}
+            onChange={handleInputChange}
+            placeholder="Enter your number"
+            maxLength={10}
+            className="w-full pl-12 pr-4 py-3 rounded-2xl border focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
+            style={{
+              background: "rgba(250, 250, 250, 0.1)",
+              borderColor: "rgba(244, 197, 66, 0.3)",
+              color: "#FAFAFA",
+            }}
+            required
+          />
+        </div>
+      </div>
+
+      {/* Send OTP button */}
+      <button
+        type="button"
+        onClick={() => handleSendOtp(formData.number)}
+        disabled={!formData.number || otpSent}
+        className="w-full mt-3 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-medium text-white shadow-md hover:scale-105 hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{
+          background: "linear-gradient(135deg, #34D399 0%, #059669 100%)",
+        }}
+      >
+        <Send className="w-4 h-4" />
+        {otpSent ? "OTP Sent" : "Send OTP"}
+      </button>
+
+      {/* OTP Input */}
+      {otpSent && (
+        <div className="mt-3">
+          <label
+            className="block text-sm font-medium mb-2"
+            style={{ color: "#FAFAFA" }}
+          >
+            OTP
+          </label>
+          <div className="relative">
+            <Hourglass
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5"
+              style={{ color: "rgba(250, 250, 250, 0.5)" }}
+            />
+            <input
+              type="text"
+              name="otp"
+              value={formData.otp || ""}
+              onChange={handleInputChange}
+              placeholder="Enter OTP"
+              maxLength={4}
+              className="w-full pl-12 pr-4 py-3 rounded-2xl border focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-300"
+              style={{
+                background: "rgba(250, 250, 250, 0.1)",
+                borderColor: "rgba(244, 197, 66, 0.3)",
+                color: "#FAFAFA",
+              }}
+              required
+            />
+          </div>
+
+          {/* Verify OTP button */}
+          <button
+            type="button"
+            onClick={() => handleVerifyOtp(formData.otp)}
+            className="w-full mt-3 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-medium text-white shadow-md hover:scale-105 hover:shadow-lg transition-all duration-300"
+            style={{
+              background: "linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)",
+            }}
+          >
+            <CheckCircle className="w-4 h-4" />
+            Verify OTP
+          </button>
+
+          {/* OTP Error */}
+          {otpError && (
+            <p className="text-red-400 text-sm mt-2">{otpError}</p>
+          )}
+
+          {/* OTP Verified */}
+          {otpVerified && (
+            <p className="text-green-400 text-sm mt-2">✅ OTP Verified!</p>
+          )}
+        </div>
+      )}
+
+      {/* Remember me (only for login) */}
+      {isLogin && (
+        <div className="flex items-center justify-between mt-3">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              className="rounded border-gray-300 text-yellow-400 focus:ring-yellow-400"
+            />
+            <span
+              className="ml-2 text-sm"
+              style={{ color: "rgba(250, 250, 250, 0.7)" }}
+            >
+              Remember me
+            </span>
+          </label>
+          <button
+            type="button"
+            className="text-sm hover:underline transition-all duration-300"
+            style={{ color: "#F4C542" }}
+          >
+            Forgot password?
+          </button>
+        </div>
+      )}
+
+      {/* Submit button */}
+      <button
+        type="button"
+        onClick={handleSubmit}
+        disabled={isLoading || !otpVerified}
+        className="w-full mt-4 flex items-center justify-center gap-3 py-3 px-4 rounded-2xl font-semibold text-white shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{
+          background: "linear-gradient(135deg, #F4C542 0%, #E6B73A 100%)",
+        }}
+      >
+        {isLoading ? (
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+        ) : (
+          <>
+            <span>{isLogin ? "Sign In" : "Create Account"}</span>
+            <ArrowRight className="w-5 h-5" />
+          </>
+        )}
+      </button>
+    </>
+  );
+};
+
+export default NumberLoginForm;

@@ -15,6 +15,8 @@ import TransactionHistory from "./pages/TransactionHistory/TransactionHistory";
 import ToDoDashboard from "./pages/ToDoDashboard/ToDoDashboard";
 import FinancialInsightsDashboard from "./pages/FinancialInsightsDashboard/FinancialInsightsDashboard";
 import ErrorPage from "./pages/ErrorPage/ErrorPage";
+import AccountSection from "./pages/AccountSettings/AccountSection";
+import PreferencesSection from "./pages/PreferencesSection/PreferencesSection";
 
 // ✅ ProtectedRoute wrapper
 function ProtectedRoute({ auth, children }) {
@@ -64,6 +66,10 @@ export default function App() {
         { path: "transaction", element: <TransactionHistory /> },
         { path: "to-do", element: <ToDoDashboard /> },
         { path: "insights", element: <FinancialInsightsDashboard /> },
+
+        // Profile section
+        { path: "account-section", element: <AccountSection /> },
+        { path: "preferences-section", element: <PreferencesSection /> }
       ],
     },
   ]);
