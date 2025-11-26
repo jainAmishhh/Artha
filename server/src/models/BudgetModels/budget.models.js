@@ -1,3 +1,5 @@
+// Artha\server\src\models\BudgetModels
+
 import mongoose, { Schema } from "mongoose";
 
 const budgetSchema = new Schema(
