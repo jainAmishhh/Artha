@@ -1,95 +1,73 @@
-// Your React Todo object includes:
+import mongoose, { Schema } from "mongoose";
 
-// title
-
-// description
-
-// priority
-
-// role
-
-// status
-
-// dueDate
-
-// dueTime
-
-// createdAt
-
-// completedAt
-
-// icon (string name)
-
-// color
-
-import mongoose from "mongoose";
-
-const todoSchema = new mongoose.Schema(
+const todoSchema = new Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      trim: true,
     },
-
     title: {
       type: String,
       required: true,
+      trim: true,
     },
-
     description: {
       type: String,
+      trim: true,
       default: "",
     },
-
     priority: {
       type: String,
-      enum: ["low", "medium", "high"],
-      default: "medium",
+      enum: ["Low", "Medium", "High"],
+      default: "Medium",
+      trim: true,
+      required: true,
     },
-
-    role: {
+    category: {
       type: String,
+      enum: ["Personal", "Work", "Development", "Learning", "Health"],
       default: "Personal",
+      required: true,
     },
-
+    dueDate: {
+      type: Date,
+      required: true,
+    },
+    dueTime: {
+      type: String,
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
     status: {
       type: String,
       enum: ["pending", "completed"],
       default: "pending",
     },
-
-    dueDate: {
-      type: String,
-      required: true,
-    },
-
-    dueTime: {
-      type: String,
-      required: true,
-    },
-
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-
     completedAt: {
       type: Date,
       default: null,
     },
-
     icon: {
       type: String,
+      enum: [
+        "User",
+        "BookOpen",
+        "AlertTriangle",
+        "Home",
+        "ShoppingCart",
+        "Utensils",
+        "Car",
+        "Heart",
+      ],
       default: "User",
-    },
-
-    color: {
-      type: String,
-      default: "#6B7280",
     },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Todo", todoSchema);
+export default mongoose.model("TODO", todoSchema);
