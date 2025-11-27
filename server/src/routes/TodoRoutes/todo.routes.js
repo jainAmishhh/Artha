@@ -6,27 +6,30 @@ import {
   toggleStatus,
   updateTodo,
   deleteTodo,
-} from "../controllers/todoController.js";
-import authMiddleware from "../middleware/auth.js";
+} from "../../controllers/TodoControllers/todo.controllers.js";
+import { authMiddleware } from "../../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// Create
-router.post("/create", authMiddleware, createTodo);
+// Apply auth to all todo routes
+router.use(authMiddleware);
 
-// Get all todos
-router.get("/all", authMiddleware, getTodos);
+// Create a new TODO
+router.post("/", createTodo);
 
-// Filter + Sort
-router.get("/filter", authMiddleware, filterTodos);
+// Get all TODOs for logged-in user
+router.get("/", getTodos);
 
-// Toggle Complete/Pending
-router.patch("/toggle/:id", authMiddleware, toggleStatus);
+// Filter + sort TODOs (uses query params)
+router.get("/filter", filterTodos);
 
-// Update
-router.put("/:id", authMiddleware, updateTodo);
+// Toggle TODO status (pending/completed)
+router.patch("/:id/toggle", toggleStatus);
 
-// Delete
-router.delete("/:id", authMiddleware, deleteTodo);
+// Update a TODO
+router.put("/:id", updateTodo);
+
+// Delete a TODO
+router.delete("/:id", deleteTodo);
 
 export default router;
