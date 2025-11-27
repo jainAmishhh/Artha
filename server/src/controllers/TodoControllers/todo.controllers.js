@@ -1,109 +1,131 @@
-// ✔ Create Todo
-// ✔ Get all Todos
-// ✔ Filter Todos (status, priority, role, search)
-// ✔ Sort Todos (priority, dueDate, role, status)
-// ✔ Toggle status
-// ✔ Update & Delete
+import TODO from "../../models/TodoModels/todo.models.js";
 
-import Todo from "../models/Todo.js";
-
-// Create a new todo
+// Create Todo //
 export const createTodo = async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      priority,
-      role,
-      dueDate,
-      dueTime,
-      icon,
-      color,
-    } = req.body;
+    const { title, description, priority, category, dueDate, dueTime, icon } =
+      req.body;
 
-    const newTodo = await Todo.create({
+    // Required validation
+    if (!title || !priority || !category || !dueDate || !dueTime) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Title, Priority, Category, Due Date & Due Time are required.",
+      });
+    }
+
+    const newTodo = await TODO.create({
       userId: req.user._id,
       title,
       description,
       priority,
-      role,
+      category,
       dueDate,
       dueTime,
       icon,
-      color,
-      status: "pending",
-      createdAt: new Date(),
     });
 
-    res.status(201).json({ message: "Todo created", data: newTodo });
+    return res.status(201).json({
+      success: true,
+      message: "TODO created successfully!",
+      data: newTodo,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to create TODO",
+      error: error.message,
+    });
   }
 };
 
+// Get all Todos //
 export const getTodos = async (req, res) => {
   try {
-    const todos = await Todo.find({ userId: req.user._id }).sort({
+    const todos = await TODO.find({ userId: req.user._id }).sort({
       createdAt: -1,
     });
 
-    res.status(200).json(todos);
+    return res.status(200).json({
+      success: true,
+      message: "TODOs fetched successfully!",
+      data: todos,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch TODOs",
+      error: error.message,
+    });
   }
 };
 
+// Filter Todos (status, priority, role, search) //
+// Sort Todos (priority, dueDate, role, status) //
 export const filterTodos = async (req, res) => {
   try {
     const {
       search = "",
       status = "All",
       priority = "All",
-      role = "All",
+      category = "All",
       sortBy = "dueDate",
       sortOrder = "asc",
-    } = req.query;
+    } = req.body;
 
+    // Build dynamic MongoDB query object
     const query = { userId: req.user._id };
 
-    // Search Filter
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } }
+        { description: { $regex: search, $options: "i" } },
       ];
     }
 
-    // Status
     if (status !== "All") query.status = status;
-
-    // Priority
     if (priority !== "All") query.priority = priority;
+    if (category !== "All") query.category = category;
 
-    // Role/Category
-    if (role !== "All") query.role = role;
-
-    // Sorting
     const sortOptions = {};
     sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-    const todos = await Todo.find(query).sort(sortOptions);
+    const todos = await TODO.find(query).sort(sortOptions);
 
-    res.status(200).json(todos);
+    return res.status(200).json({
+      success: true,
+      message: "Todos filtered successfully!",
+      data: todos,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to filter TODOs",
+      error: error.message,
+    });
   }
 };
 
+// Toggle status //
 export const toggleStatus = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const todo = await Todo.findById(id);
-    if (!todo) return res.status(404).json({ error: "Todo not found" });
+    const todo = await TODO.findById(id);
+    if (!todo) {
+      return res.status(404).json({
+        success: false,
+        message: "TODO not found!",
+      });
+    }
 
-    if (todo.userId.toString() !== req.user._id.toString())
-      return res.status(403).json({ error: "Unauthorized" });
+    if (todo.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update this TODO",
+      });
+    }
 
     if (todo.status === "pending") {
       todo.status = "completed";
@@ -115,50 +137,98 @@ export const toggleStatus = async (req, res) => {
 
     await todo.save();
 
-    res.status(200).json({ message: "Status updated", data: todo });
+    return res.status(200).json({
+      success: true,
+      message: "Status updated successfully!",
+      data: todo,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update TODO status",
+      error: error.message,
+    });
   }
 };
 
+// Update a TODO //
 export const updateTodo = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const todo = await Todo.findById(id);
-    if (!todo) return res.status(404).json({ error: "Todo not found" });
+    const todo = await TODO.findById(id);
+    if (!todo) {
+      return res.status(404).json({
+        success: false,
+        message: "TODO not found!",
+      });
+    }
 
-    if (todo.userId.toString() !== req.user._id.toString())
-      return res.status(403).json({ error: "Unauthorized" });
+    if (todo.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update this TODO",
+      });
+    }
 
-    const updatedTodo = await Todo.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
+    const { title, description, priority, category, dueDate, dueTime, icon } =
+      req.body;
 
-    res.status(200).json({
-      message: "Todo updated",
-      data: updatedTodo,
+    if (title) todo.title = title;
+    if (description) todo.description = description;
+    if (priority) todo.priority = priority;
+    if (category) todo.category = category;
+    if (dueDate) todo.dueDate = dueDate;
+    if (dueTime) todo.dueTime = dueTime;
+    if (icon) todo.icon = icon;
+
+    await todo.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "TODO updated successfully!",
+      data: todo,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update TODO",
+      error: error.message,
+    });
   }
 };
 
+// Delete a Todo //
 export const deleteTodo = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const todo = await Todo.findById(id);
-    if (!todo) return res.status(404).json({ error: "Todo not found" });
+    const todo = await TODO.findById(id);
+    if (!todo) {
+      return res.status(404).json({
+        success: false,
+        message: "TODO not found!",
+      });
+    }
 
-    if (todo.userId.toString() !== req.user._id.toString())
-      return res.status(403).json({ error: "Unauthorized" });
+    if (todo.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to delete this TODO",
+      });
+    }
 
     await todo.deleteOne();
 
-    res.status(200).json({ message: "Todo deleted" });
+    return res.status(200).json({
+      success: true,
+      message: "TODO deleted successfully!",
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete TODO",
+      error: error.message,
+    });
   }
 };
-
