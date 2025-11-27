@@ -74,6 +74,13 @@ export const getBudgets = async (req, res) => {
       createdAt: -1,
     });
 
+    if (!budgets) {
+      return res.status(400).json({
+        success: false,
+        message: "Budget not found!",
+      })
+    }
+
     return res.status(200).json({
       success: true,
       message: "Budgets fetched successfully",
@@ -96,7 +103,7 @@ export const updateBudget = async (req, res) => {
 
     const budget = await Budget.findById(id);
     if (!budget) {
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
         message: "Budget not found",
       });
@@ -162,7 +169,7 @@ export const deleteBudget = async (req, res) => {
 
     const budget = await Budget.findById(id);
     if (!budget) {
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
         message: "Budget not found",
       });
