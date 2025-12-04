@@ -5,24 +5,27 @@ import {
   filterTransactions,
   updateTransaction,
   deleteTransaction,
-} from "../controllers/transactionController.js";
-import authMiddleware from "../middleware/auth.js";
+} from "../../controllers/TransactionControllers/transaction.controllers.js";
+import { authMiddleware } from "../../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// Create
-router.post("/create", authMiddleware, createTransaction);
+// Apply auth to all transaction routes
+router.use(authMiddleware);
 
-// Get all
-router.get("/all", authMiddleware, getTransactions);
+// Create a new transaction
+router.post("/", createTransaction);
 
-// Filter
-router.get("/filter", authMiddleware, filterTransactions);
+// Get all transactions of logged-in user
+router.get("/", getTransactions);
 
-// Update
-router.put("/:id", authMiddleware, updateTransaction);
+// Filter transactions (search, type, category, range)
+router.get("/filter", filterTransactions);
 
-// Delete
-router.delete("/:id", authMiddleware, deleteTransaction);
+// Update a transaction
+router.put("/:id", updateTransaction);
+
+// Delete a transaction
+router.delete("/:id", deleteTransaction);
 
 export default router;

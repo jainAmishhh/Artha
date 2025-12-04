@@ -1,60 +1,79 @@
-import Transaction from "../models/Transaction.js";
+import Transaction from "../../models/TransactionModels/transaction.models.js";
 
-
-// ➤ Create a new transaction
+// Create Transaction
 export const createTransaction = async (req, res) => {
   try {
-    const {
-      description,
-      merchant,
-      amount,
-      type,
-      category,
-      date,
-      icon,
-      color,
-    } = req.body;
+    const { types, description, merchant, amount, date, category, icon } = req.body;
 
-    const transaction = await Transaction.create({
+    if (!types || !description || !amount || !date || !category) {
+      return res.status(400).json({
+        success: false,
+        message: "Type, description, amount, date & category are required!",
+      });
+    }
+
+    if (isNaN(amount) || amount <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Amount must be a positive number",
+      });
+    }
+
+    const newTransaction = await Transaction.create({
       userId: req.user._id,
+      types,
       description,
       merchant,
       amount,
-      type,
-      category,
       date,
+      category,
       icon,
-      color,
     });
 
-    res.status(201).json({
-      message: "Transaction added successfully",
-      data: transaction,
+    return res.status(201).json({
+      success: true,
+      message: "Transaction added successfully!",
+      data: newTransaction,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to create transaction",
+      error: error.message,
+    });
   }
 };
 
-
-// ➤ Get all transactions for logged-in user
+// Get All Transactions
 export const getTransactions = async (req, res) => {
   try {
-    const transactions = await Transaction.find({ userId: req.user._id })
-      .sort({ date: -1 });
+    const transactions = await Transaction.find({ userId: req.user._id }).sort({
+      date: -1,
+    });
 
-    res.status(200).json(transactions);
+    return res.status(200).json({
+      success: true,
+      message: "Transactions fetched successfully!",
+      data: transactions,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch transactions",
+      error: error.message,
+    });
   }
 };
 
-
-// ➤ Filter transactions (search, type, category, date-range)
+// Filter Transactions
 export const filterTransactions = async (req, res) => {
   try {
-    const { search = "", type = "All", category = "All", range = "All" } =
-      req.query;
+    const {
+      search = "",
+      types = "All",
+      category = "All",
+      range = "All",
+    } = req.query;
 
     const query = { userId: req.user._id };
 
@@ -62,77 +81,124 @@ export const filterTransactions = async (req, res) => {
     if (search) {
       query.$or = [
         { description: { $regex: search, $options: "i" } },
-        { merchant: { $regex: search, $options: "i" } }
+        { merchant: { $regex: search, $options: "i" } },
       ];
     }
 
     // Type filter
-    if (type !== "All") query.type = type;
+    if (types !== "All") query.types = types;
 
     // Category filter
     if (category !== "All") query.category = category;
 
-    // Time filter -> Today, 7 Days, 30 Days
+    // Date Range Filter
     if (range !== "All") {
       const cutoff = new Date();
-      if (range === "Today") cutoff.setDate(cutoff.getDate() - 1);
-      if (range === "7 Days") cutoff.setDate(cutoff.getDate() - 7);
-      if (range === "30 Days") cutoff.setDate(cutoff.getDate() - 30);
+      cutoff.setHours(0, 0, 0, 0);
+
+      if (range === "7 Days") {
+        cutoff.setDate(cutoff.getDate() - 7);
+      } else if (range === "30 Days") {
+        cutoff.setDate(cutoff.getDate() - 30);
+      }
 
       query.date = { $gte: cutoff };
     }
 
     const transactions = await Transaction.find(query).sort({ date: -1 });
 
-    res.status(200).json(transactions);
+    return res.status(200).json({
+      success: true,
+      message: "Transactions filtered successfully!",
+      data: transactions,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to filter transactions",
+      error: error.message,
+    });
   }
 };
 
-
-// ➤ Update transaction
+// Update Transaction
 export const updateTransaction = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const oldTxn = await Transaction.findById(id);
-    if (!oldTxn) return res.status(404).json({ error: "Transaction not found" });
+    const transaction = await Transaction.findById(id);
+    if (!transaction) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction not found!",
+      });
+    }
 
-    if (oldTxn.userId.toString() !== req.user._id.toString())
-      return res.status(403).json({ error: "Unauthorized" });
+    if (transaction.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update this transaction",
+      });
+    }
 
-    const updatedTxn = await Transaction.findByIdAndUpdate(
-      id,
-      req.body,
-      { new: true }
-    );
+    const { types, description, merchant, amount, date, category, icon } =
+      req.body;
 
-    res.status(200).json({
-      message: "Transaction updated successfully",
-      data: updatedTxn,
+    if (types) transaction.types = types;
+    if (description) transaction.description = description;
+    if (merchant) transaction.merchant = merchant;
+    if (amount) transaction.amount = amount;
+    if (date) transaction.date = date;
+    if (category) transaction.category = category;
+    if (icon) transaction.icon = icon;
+
+    await transaction.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Transaction updated successfully!",
+      data: transaction,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update transaction",
+      error: error.message,
+    });
   }
 };
 
-
-// ➤ Delete transaction
+// Delete Transaction
 export const deleteTransaction = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const txn = await Transaction.findById(id);
-    if (!txn) return res.status(404).json({ error: "Transaction not found" });
+    const transaction = await Transaction.findById(id);
+    if (!transaction) {
+      return res.status(404).json({
+        success: false,
+        message: "Transaction not found!",
+      });
+    }
 
-    if (txn.userId.toString() !== req.user._id.toString())
-      return res.status(403).json({ error: "Unauthorized" });
+    if (transaction.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to delete this transaction",
+      });
+    }
 
-    await txn.deleteOne();
+    await transaction.deleteOne();
 
-    res.status(200).json({ message: "Transaction deleted successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "Transaction deleted successfully!",
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete transaction",
+      error: error.message,
+    });
   }
 };

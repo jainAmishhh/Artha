@@ -5,8 +5,8 @@
 //   category,
 //   name,
 //   budget,
-//   spent,
-//   color,
+//   spentAmount,
+//   colorTheme,
 //   icon
 // });
 
@@ -19,15 +19,34 @@
 // Delete Budget
 // axios.delete(`/api/budget/${id}`);
 
-
 import React, { useState, useEffect } from "react";
-import { 
-  AlertTriangle, BookOpen, Home, TrendingUp, Plus, 
-  Wallet, Target, Calendar, Edit2, Trash2, X,
-  PieChart, BarChart3, DollarSign, CreditCard,
-  ShoppingCart, Utensils, Car, Heart, Sparkles
+import {
+  AlertTriangle,
+  BookOpen,
+  Home,
+  Plus,
+  Wallet,
+  Edit2,
+  Trash2,
+  X,
+  BarChart3,
+  DollarSign,
+  CreditCard,
+  ShoppingCart,
+  Utensils,
+  Car,
+  Heart,
 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
+import {
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Area,
+  AreaChart,
+} from "recharts";
+import axios from "../../api/axios";
 
 const BudgetDashboard = () => {
   const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -37,14 +56,15 @@ const BudgetDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [budgetItems, setBudgetItems] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [newItem, setNewItem] = useState({
     category: "",
-    name: "",
+    budgetName: "",
     date: "",
     budget: "",
-    spent: "",
+    spentAmount: "",
     icon: "",
-    color: "emerald",
+    colorTheme: "emerald",
   });
 
   const iconOptions = [
@@ -58,9 +78,17 @@ const BudgetDashboard = () => {
   ];
 
   const colorOptions = [
-    { name: "emerald", gradient: "from-emerald-500 to-emerald-600", hex: "#10b981" },
+    {
+      name: "emerald",
+      gradient: "from-emerald-500 to-emerald-600",
+      hex: "#10b981",
+    },
     { name: "blue", gradient: "from-blue-500 to-blue-600", hex: "#3b82f6" },
-    { name: "purple", gradient: "from-purple-500 to-purple-600", hex: "#a855f7" },
+    {
+      name: "purple",
+      gradient: "from-purple-500 to-purple-600",
+      hex: "#a855f7",
+    },
     { name: "rose", gradient: "from-rose-500 to-rose-600", hex: "#f43f5e" },
     { name: "amber", gradient: "from-amber-500 to-amber-600", hex: "#f59e0b" },
     { name: "cyan", gradient: "from-cyan-500 to-cyan-600", hex: "#06b6d4" },
@@ -100,93 +128,175 @@ const BudgetDashboard = () => {
   };
 
   useEffect(() => {
-    const initialBudgets = [
-      createBudgetItem("Education", "Education", Date.now(), 100000, 25000, BookOpen, "blue"),
-      createBudgetItem("Emergency", "Emergency Fund", Date.now(), 250000, 5000, AlertTriangle, "rose"),
-      createBudgetItem("Housing", "Rent & Bills", Date.now(), 12000, 2000, Home, "emerald"),
-      createBudgetItem("Food", "Groceries & Dining", Date.now(), 8000, 3500, Utensils, "amber"),
-    ];
-    setBudgetItems(initialBudgets);
+    fetchBudgets();
   }, []);
 
-  const createBudgetItem = (category, name, date, budget, spent, icon, color) => {
-    const remaining = budget - spent;
-    const percentageSpent = Math.min(Math.round((spent / budget) * 100), 100);
-    return {
-      id: generateId(),
-      category,
-      name,
-      date,
-      icon,
-      budget,
-      spent,
-      remaining,
-      percentageSpent,
-      color,
-    };
+  const fetchBudgets = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("/api/budgets");
+      setBudgetItems(response.data.data);
+    } catch (error) {
+      console.log("Error fetching budgets:", error);
+      alert("Failed to fetch budgets");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRemoveItem = (id) => {
-    const updated = budgetItems.filter((item) => item.id !== id);
-    setBudgetItems(updated);
+  const createBudgetItem = async () => {
+    try {
+      setLoading(true);
+
+      const IconComponent =
+        iconOptions.find((opt) => opt.name === newItem.category)?.icon ||
+        BookOpen;
+
+      const response = await axios.post("/api/budgets", {
+        category: newItem.category,
+        budgetName: newItem.budgetName,
+        budgetAmount: Number(newItem.budget),
+        spentAmount: Number(newItem.spentAmount),
+        colorTheme: newItem.colorTheme,
+        icon: IconComponent.name, // backend expects string, not component
+      });
+
+      setBudgetItems((prev) => [response.data.data, ...prev]);
+
+      setShowModal(false);
+
+      setNewItem({
+        category: "",
+        budgetName: "",
+        budget: "",
+        spentAmount: "",
+        colorTheme: "emerald",
+      });
+    } catch (error) {
+      console.error("Error creating budget:", error);
+      alert("Error creating budget");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // const createBudgetItem = async (data) => {
+  //   try {
+  //     const response = await axios.post(`${backendURL}/api/budget/create`, {
+  //       category,
+  //       name,
+  //       budget,
+  //       spentAmount,
+  //       remaining: budget - spentAmount,
+  //       percentageSpent: Math.min(Math.round((spentAmount / budget) * 100), 100),
+  //       colorTheme,
+  //       icon,
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching budget:", error);
+  //     alert("Error creating Budget");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  //   const handleRemoveItem = async (id) => {
+  //   try {
+  //     setLoading(true);
+  //     await axios.delete(`/api/budgets/${id}`);
+  //     setBudgetItems((prev) => prev.filter((item) => item._id !== id));
+  //   } catch (error) {
+  //     console.error("Error deleting budget:", error);
+  //     alert("Failed deleting budget");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const handleRemoveItem = async (id) => {
+    try {
+      setLoading(true);
+
+      await axios.delete(`/api/budgets/${id}`);
+      setBudgetItems((prev) => prev.filter((item) => item._id !== id));
+    } catch (error) {
+      console.error("Error deleting budget:", error);
+      alert("Failed deleting budget");
+    } finally {
+      setLoading(false);
+    }
+  };
+  // const handleRemoveItem = (id) => {
+  //   const updated = budgetItems.filter((item) => item.id !== id);
+  //   setBudgetItems(updated);
+  // };
 
   const handleAddNewItem = () => {
-    if (!newItem.name || !newItem.budget || !newItem.spent) return;
+    if (!newItem.budgetName || !newItem.budget || !newItem.spentAmount) return;
 
-    const IconComponent = iconOptions.find(opt => opt.name === newItem.category)?.icon || BookOpen;
+    const IconComponent =
+      iconOptions.find((opt) => opt.budgetName === newItem.category)?.icon ||
+      BookOpen;
     const item = createBudgetItem(
       newItem.category,
-      newItem.name,
+      newItem.budgetName,
       Date.now(),
       Number(newItem.budget),
-      Number(newItem.spent),
+      Number(newItem.spentAmount),
       IconComponent,
-      newItem.color
+      newItem.colorTheme
     );
 
     setBudgetItems((prev) => [...prev, item]);
     setNewItem({
       category: "",
-      name: "",
+      budgetName: "",
       budget: "",
-      spent: "",
+      spentAmount: "",
       icon: "",
-      color: "emerald",
+      colorTheme: "emerald",
     });
     setShowModal(false);
   };
 
-  const handleEditItem = () => {
+  const handleEditItem = async () => {
     if (!editingItem) return;
 
-    const updatedItems = budgetItems.map((item) =>
-      item.id === editingItem.id
-        ? {
-            ...editingItem,
-            budget: Number(editingItem.budget),
-            spent: Number(editingItem.spent),
-            remaining: Number(editingItem.budget) - Number(editingItem.spent),
-            percentageSpent: Math.min(
-              Math.round((Number(editingItem.spent) / Number(editingItem.budget)) * 100),
-              100
-            ),
-          }
-        : item
-    );
+    try {
+      setLoading(true);
 
-    setBudgetItems(updatedItems);
-    setEditingItem(null);
-    setShowModal(false);
+      const updatedPayload = {
+        category: editingItem.category,
+        budgetName: editingItem.budgetName,
+        budgetAmount: editingItem.budgetAmount,
+        spentAmount: editingItem.spentAmount,
+        colorTheme: editingItem.colorTheme,
+        icon: editingItem.icon,
+      };
+
+      const response = await axios.put(`/api/budgets/${editingItem._id}`, updatedPayload);
+
+      const updated = response.data.data;;
+
+      setBudgetItems((prev) => prev.map((item) => (item._id === updated._id? updated: item)));
+
+      setEditingItem(null);
+      setShowModal(false);
+    } catch (error) {
+      console.error("Failed editing budget");
+      alert("Failed editing Budget.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const openAddModal = () => {
     setNewItem({
       category: "Education",
-      name: "",
+      budgetName: "",
       budget: "",
-      spent: "",
-      color: "emerald",
+      spentAmount: "",
+      colorTheme: "emerald",
     });
     setShowModal(true);
   };
@@ -195,18 +305,42 @@ const BudgetDashboard = () => {
     setChartData(timeFilterData[activeTimeFilter]);
   }, [activeTimeFilter]);
 
-  const totalBudget = budgetItems.reduce((sum, item) => sum + item.budget, 0);
-  const totalSpent = budgetItems.reduce((sum, item) => sum + item.spent, 0);
+  const totalBudget = budgetItems.reduce((sum, item) => sum + item.budgetAmount, 0);
+  const totalSpent = budgetItems.reduce((sum, item) => sum + item.spentAmount, 0);
   const totalRemaining = totalBudget - totalSpent;
 
   const getColorClasses = (color) => {
-    const colorMap = {
-      emerald: { bg: "bg-emerald-500", text: "text-emerald-600", gradient: "from-emerald-500 to-emerald-600" },
-      blue: { bg: "bg-blue-500", text: "text-blue-600", gradient: "from-blue-500 to-blue-600" },
-      purple: { bg: "bg-purple-500", text: "text-purple-600", gradient: "from-purple-500 to-purple-600" },
-      rose: { bg: "bg-rose-500", text: "text-rose-600", gradient: "from-rose-500 to-rose-600" },
-      amber: { bg: "bg-amber-500", text: "text-amber-600", gradient: "from-amber-500 to-amber-600" },
-      cyan: { bg: "bg-cyan-500", text: "text-cyan-600", gradient: "from-cyan-500 to-cyan-600" },
+    const colorThemeMap = {
+      emerald: {
+        bg: "bg-emerald-500",
+        text: "text-emerald-600",
+        gradient: "from-emerald-500 to-emerald-600",
+      },
+      blue: {
+        bg: "bg-blue-500",
+        text: "text-blue-600",
+        gradient: "from-blue-500 to-blue-600",
+      },
+      purple: {
+        bg: "bg-purple-500",
+        text: "text-purple-600",
+        gradient: "from-purple-500 to-purple-600",
+      },
+      rose: {
+        bg: "bg-rose-500",
+        text: "text-rose-600",
+        gradient: "from-rose-500 to-rose-600",
+      },
+      amber: {
+        bg: "bg-amber-500",
+        text: "text-amber-600",
+        gradient: "from-amber-500 to-amber-600",
+      },
+      cyan: {
+        bg: "bg-cyan-500",
+        text: "text-cyan-600",
+        gradient: "from-cyan-500 to-cyan-600",
+      },
     };
     return colorMap[color] || colorMap.emerald;
   };
@@ -214,7 +348,6 @@ const BudgetDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-amber-50/20 pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
@@ -222,17 +355,19 @@ const BudgetDashboard = () => {
               <Wallet className="text-white" size={28} />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-slate-800">Budget Dashboard</h1>
-              <p className="text-slate-600">Track and manage your spending goals</p>
+              <h1 className="text-4xl font-bold text-slate-800">
+                Budget Dashboard
+              </h1>
+              <p className="text-slate-600">
+                Track and manage your spending goals
+              </p>
             </div>
           </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
-          
           {/* Chart Section */}
           <div className="lg:col-span-2 space-y-6">
-            
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg">
@@ -240,9 +375,13 @@ const BudgetDashboard = () => {
                   <div className="p-2 bg-emerald-100 rounded-xl">
                     <DollarSign className="text-emerald-600" size={20} />
                   </div>
-                  <p className="text-sm text-slate-600 font-medium">Total Budget</p>
+                  <p className="text-sm text-slate-600 font-medium">
+                    Total Budget
+                  </p>
                 </div>
-                <p className="text-3xl font-bold text-slate-800">₹{totalBudget.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-slate-800">
+                  ₹{totalBudget.toLocaleString()}
+                </p>
               </div>
 
               <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg">
@@ -250,10 +389,16 @@ const BudgetDashboard = () => {
                   <div className="p-2 bg-rose-100 rounded-xl">
                     <CreditCard className="text-rose-600" size={20} />
                   </div>
-                  <p className="text-sm text-slate-600 font-medium">Total Spent</p>
+                  <p className="text-sm text-slate-600 font-medium">
+                    Total Spent
+                  </p>
                 </div>
-                <p className="text-3xl font-bold text-slate-800">₹{totalSpent.toLocaleString()}</p>
-                <p className="text-xs text-slate-500 mt-1">{Math.round((totalSpent/totalBudget)*100)}% of budget</p>
+                <p className="text-3xl font-bold text-slate-800">
+                  ₹{totalSpent.toLocaleString()}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  {Math.round((totalSpent / totalBudget) * 100)}% of budget
+                </p>
               </div>
 
               <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-lg">
@@ -261,10 +406,16 @@ const BudgetDashboard = () => {
                   <div className="p-2 bg-blue-100 rounded-xl">
                     <Wallet className="text-blue-600" size={20} />
                   </div>
-                  <p className="text-sm text-slate-600 font-medium">Remaining</p>
+                  <p className="text-sm text-slate-600 font-medium">
+                    Remaining
+                  </p>
                 </div>
-                <p className="text-3xl font-bold text-slate-800">₹{totalRemaining.toLocaleString()}</p>
-                <p className="text-xs text-emerald-600 mt-1">Available to spend</p>
+                <p className="text-3xl font-bold text-slate-800">
+                  ₹{totalRemaining.toLocaleString()}
+                </p>
+                <p className="text-xs text-emerald-600 mt-1">
+                  Available to spend
+                </p>
               </div>
             </div>
 
@@ -273,9 +424,11 @@ const BudgetDashboard = () => {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <BarChart3 className="text-emerald-600" size={20} />
-                  <h3 className="text-lg font-bold text-slate-800">Spending Analytics</h3>
+                  <h3 className="text-lg font-bold text-slate-800">
+                    Spending Analytics
+                  </h3>
                 </div>
-                
+
                 {/* Time Filters */}
                 <div className="flex gap-2">
                   {["1D", "1W", "1M", "1Y"].map((filter) => (
@@ -298,27 +451,49 @@ const BudgetDashboard = () => {
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                     </linearGradient>
-                    <linearGradient id="colorBudget" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                    <linearGradient
+                      id="colorBudget"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="name" stroke="#64748b" style={{ fontSize: '12px' }} />
-                  <YAxis stroke="#64748b" style={{ fontSize: '12px' }} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'white', 
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '12px',
-                      boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                  <XAxis
+                    dataKey="name"
+                    stroke="#64748b"
+                    style={{ fontSize: "12px" }}
+                  />
+                  <YAxis stroke="#64748b" style={{ fontSize: "12px" }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "white",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
                     }}
                   />
-                  <Area type="monotone" dataKey="budget" stroke="#f59e0b" strokeWidth={2} fill="url(#colorBudget)" />
-                  <Area type="monotone" dataKey="value" stroke="#10b981" strokeWidth={3} fill="url(#colorValue)" />
+                  <Area
+                    type="monotone"
+                    dataKey="budget"
+                    stroke="#f59e0b"
+                    strokeWidth={2}
+                    fill="url(#colorBudget)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#10b981"
+                    strokeWidth={3}
+                    fill="url(#colorValue)"
+                  />
                 </AreaChart>
               </ResponsiveContainer>
 
@@ -349,12 +524,18 @@ const BudgetDashboard = () => {
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className={`p-3 bg-gradient-to-br ${colors.gradient} rounded-xl shadow-lg`}>
+                      <div
+                        className={`p-3 bg-gradient-to-br ${colors.gradient} rounded-xl shadow-lg`}
+                      >
                         <Icon className="text-white" size={20} />
                       </div>
                       <div>
-                        <h3 className="font-bold text-slate-800">{item.name}</h3>
-                        <p className="text-xs text-slate-500">{item.category}</p>
+                        <h3 className="font-bold text-slate-800">
+                          {item.budgetName}
+                        </h3>
+                        <p className="text-xs text-slate-500">
+                          {item.category}
+                        </p>
                       </div>
                     </div>
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -379,25 +560,37 @@ const BudgetDashboard = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-600">Spent</span>
-                      <span className="font-bold text-slate-800">₹{item.spent.toLocaleString()}</span>
+                      <span className="font-bold text-slate-800">
+                        ₹{item.spentAmount.toLocaleString()}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-slate-600">Budget</span>
-                      <span className="font-bold text-slate-800">₹{item.budget.toLocaleString()}</span>
+                      <span className="font-bold text-slate-800">
+                        ₹{item.budgetAmount.toLocaleString()}
+                      </span>
                     </div>
-                    
+
                     {/* Progress Bar */}
                     <div>
                       <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
-                            isOverBudget ? 'bg-gradient-to-r from-rose-500 to-rose-600' : `bg-gradient-to-r ${colors.gradient}`
+                            isOverBudget
+                              ? "bg-gradient-to-r from-rose-500 to-rose-600"
+                              : `bg-gradient-to-r ${colors.gradient}`
                           }`}
-                          style={{ width: `${Math.min(item.percentageSpent, 100)}%` }}
+                          style={{
+                            width: `${Math.min(item.percentageSpent, 100)}%`,
+                          }}
                         ></div>
                       </div>
                       <div className="flex justify-between items-center mt-2">
-                        <span className={`text-xs font-semibold ${isOverBudget ? 'text-rose-600' : colors.text}`}>
+                        <span
+                          className={`text-xs font-semibold ${
+                            isOverBudget ? "text-rose-600" : colors.text
+                          }`}
+                        >
                           {item.percentageSpent}% used
                         </span>
                         <span className="text-xs text-slate-600">
@@ -409,7 +602,9 @@ const BudgetDashboard = () => {
                     {isOverBudget && (
                       <div className="flex items-center gap-2 p-2 bg-rose-50 border border-rose-200 rounded-lg">
                         <AlertTriangle size={14} className="text-rose-600" />
-                        <span className="text-xs text-rose-700 font-medium">Over budget!</span>
+                        <span className="text-xs text-rose-700 font-medium">
+                          Over budget!
+                        </span>
                       </div>
                     )}
                   </div>
@@ -427,7 +622,9 @@ const BudgetDashboard = () => {
                   <Plus className="w-8 h-8 text-white" />
                 </div>
                 <p className="font-bold text-slate-800">Add New Budget</p>
-                <p className="text-sm text-slate-600 mt-1">Create a new budget category</p>
+                <p className="text-sm text-slate-600 mt-1">
+                  Create a new budget category
+                </p>
               </div>
             </button>
           </div>
@@ -455,12 +652,17 @@ const BudgetDashboard = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Category</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Category
+                </label>
                 <select
                   value={editingItem ? editingItem.category : newItem.category}
                   onChange={(e) => {
                     if (editingItem) {
-                      setEditingItem({ ...editingItem, category: e.target.value });
+                      setEditingItem({
+                        ...editingItem,
+                        category: e.target.value,
+                      });
                     } else {
                       setNewItem({ ...newItem, category: e.target.value });
                     }
@@ -468,21 +670,25 @@ const BudgetDashboard = () => {
                   className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
                 >
                   {iconOptions.map((opt) => (
-                    <option key={opt.name} value={opt.name}>{opt.name}</option>
+                    <option key={opt.budgetName} value={opt.budgetName}>
+                      {opt.budgetName}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Budget Name</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Budget Name
+                </label>
                 <input
                   type="text"
-                  value={editingItem ? editingItem.name : newItem.name}
+                  value={editingItem ? editingItem.budgetName : newItem.budgetName}
                   onChange={(e) => {
                     if (editingItem) {
-                      setEditingItem({ ...editingItem, name: e.target.value });
+                      setEditingItem({ ...editingItem, budgetName: e.target.value });
                     } else {
-                      setNewItem({ ...newItem, name: e.target.value });
+                      setNewItem({ ...newItem, budgetName: e.target.value });
                     }
                   }}
                   placeholder="e.g., Monthly Groceries"
@@ -491,13 +697,18 @@ const BudgetDashboard = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Budget Amount (₹)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Budget Amount (₹)
+                </label>
                 <input
                   type="number"
                   value={editingItem ? editingItem.budget : newItem.budget}
                   onChange={(e) => {
                     if (editingItem) {
-                      setEditingItem({ ...editingItem, budget: e.target.value });
+                      setEditingItem({
+                        ...editingItem,
+                        budget: e.target.value,
+                      });
                     } else {
                       setNewItem({ ...newItem, budget: e.target.value });
                     }
@@ -508,15 +719,17 @@ const BudgetDashboard = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Amount Spent (₹)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Amount Spent (₹)
+                </label>
                 <input
                   type="number"
-                  value={editingItem ? editingItem.spent : newItem.spent}
+                  value={editingItem ? editingItem.spentAmount : newItem.spentAmount}
                   onChange={(e) => {
                     if (editingItem) {
-                      setEditingItem({ ...editingItem, spent: e.target.value });
+                      setEditingItem({ ...editingItem, spentAmount: e.target.value });
                     } else {
-                      setNewItem({ ...newItem, spent: e.target.value });
+                      setNewItem({ ...newItem, spentAmount: e.target.value });
                     }
                   }}
                   placeholder="2500"
@@ -524,8 +737,10 @@ const BudgetDashboard = () => {
                 />
               </div>
 
-              <div> 
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Color Theme</label>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Color Theme
+                </label>
                 <div className="grid grid-cols-6 gap-2">
                   {colorOptions.map((color) => (
                     <button
@@ -537,8 +752,13 @@ const BudgetDashboard = () => {
                           setNewItem({ ...newItem, color: color.name });
                         }
                       }}
-                      className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color.gradient} shadow-lg hover:scale-110 transition-transform ${
-                        (editingItem ? editingItem.color : newItem.color) === color.name ? 'ring-2 ring-offset-2 ring-slate-400' : ''
+                      className={`w-10 h-10 rounded-xl bg-gradient-to-br ${
+                        color.gradient
+                      } shadow-lg hover:scale-110 transition-transform ${
+                        (editingItem ? editingItem.color : newItem.color) ===
+                        color.name
+                          ? "ring-2 ring-offset-2 ring-slate-400"
+                          : ""
                       }`}
                     ></button>
                   ))}
@@ -557,7 +777,7 @@ const BudgetDashboard = () => {
                 Cancel
               </button>
               <button
-                onClick={editingItem ? handleEditItem : handleAddNewItem}
+                onClick={editingItem ? handleEditItem : createBudgetItem}
                 className="flex-1 px-6 py-3 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg transition-all"
               >
                 {editingItem ? "Save Changes" : "Add Budget"}

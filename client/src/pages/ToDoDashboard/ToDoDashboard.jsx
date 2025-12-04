@@ -32,6 +32,7 @@ import {
   Code, Trash2, Edit3, Filter, ChevronDown, Calendar,
   Target, Zap, Award, ListTodo
 } from 'lucide-react';
+import axios from '../../api/axios';
 
 const TodoDashboard = () => {
   const [activeStatusFilter, setActiveStatusFilter] = useState('All');
@@ -191,7 +192,7 @@ const TodoDashboard = () => {
     ));
   };
 
-  const addTodo = () => {
+  const addTodo = async () => {
     if (!newTodo.title.trim()) return;
     
     const todo = {
@@ -219,6 +220,17 @@ const TodoDashboard = () => {
     });
     setShowAddTodo(false);
   };
+
+  const handleAddTodo = async (addTodo) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/apitodos/create"
+      )
+    } catch (error) {
+      console.error("Error adding todo:", error);
+      alert("Failed to add Todo");
+    }
+  }
 
   const deleteTodo = (id) => {
     setTodos(todos.filter(todo => todo.id !== id));

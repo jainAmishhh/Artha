@@ -72,9 +72,8 @@ export const filterTodos = async (req, res) => {
       category = "All",
       sortBy = "dueDate",
       sortOrder = "asc",
-    } = req.body;
+    } = req.query;
 
-    // Build dynamic MongoDB query object
     const query = { userId: req.user._id };
 
     if (search) {

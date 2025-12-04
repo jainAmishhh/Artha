@@ -1,95 +1,62 @@
 import express from "express";
+
+// Core Auth Controllers
 import {
-    emailLogin,
+  emailLogin,
   emailSignup,
   sendOtp,
   verifyOtp,
   googleLogin,
 } from "../controllers/authUser.controllers.js";
 
+// Email Update Controllers
+import {
+  requestEmailChange,
+  confirmEmailChange,
+} from "../controllers/authEmail.controller.js";
+
+// Phone Update Controllers
+import {
+  requestPhoneChangeOtp,
+  verifyPhoneChangeOtp,
+} from "../controllers/authPhone.controller.js";
+
+// Password Reset Controllers
+import {
+  requestPasswordReset,
+  resetPassword,
+} from "../controllers/authPassword.controller.js";
+
+// Rate Limiters
+import { globalLimiter, authLimiter } from "../middlewares/rateLimiter.js";
+
+// Auth Middleware (Protect routes)
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+
 const router = express.Router();
 
-router.post("/login", emailLogin);
-router.post("/signup", emailSignup);
-router.post("/send-otp", sendOtp);
+router.use(globalLimiter);
+
+  //  PUBLIC AUTH ROUTES
+router.post("/login", authLimiter, emailLogin);
+router.post("/signup", authLimiter, emailSignup);
+router.post("/send-otp", authLimiter, sendOtp);
 router.post("/verify-otp", verifyOtp);
-router.post("/google-login", googleLogin);
+router.post("/google-login", authLimiter, googleLogin);
+
+  //  PASSWORD RESET ROUTES (PUBLIC)
+router.post("/password/reset/request", authLimiter, requestPasswordReset);
+router.post("/password/reset/confirm", resetPassword);
+
+  //  PROTECTED AUTH ROUTES (Requires token)
+router.use(authMiddleware);
+
+// Email Change 
+router.post("/email/update/request", requestEmailChange);
+router.get("/email/update/confirm", confirmEmailChange);
+
+// Phone Number Change 
+router.post("/phone/update/request-otp", requestPhoneChangeOtp);
+router.post("/phone/update/verify-otp", verifyPhoneChangeOtp);
 
 export default router;
-
-
-// import express from "express";
-// import axios from "axios";
-
-// const router = express.Router();
-
-// // send OTP
-// router.post("/send-otp", async (req, res) => {
-//   try {
-//     const { number } = req.body;
-
-//     if (!number || !/^\d{10}$/.test(number)) {
-//       return res.status(400).json({ success: false, message: "Invalid number" });
-//     }
-
-//     // Generate random 4-digit OTP
-//     const otp = Math.floor(1000 + Math.random() * 9000);
-
-//     // 👉 Save OTP temporarily (use DB like Redis/Mongo in real projects)
-//     global.otpStore = { number, otp };
-
-//     // ✅ FAST2SMS integration (uncomment if you have API key)
-//     /*
-//     await axios.post("https://www.fast2sms.com/dev/bulkV2", {
-//       route: "otp",
-//       message: `Your OTP is ${otp}`,
-//       numbers: [number]
-//     }, {
-//       headers: {
-//         authorization: process.env.FAST2SMS_API_KEY
-//       }
-//     });
-//     */
-
-//     console.log("OTP sent:", otp);
-
-//     res.json({ success: true, message: "OTP sent successfully" });
-//   } catch (err) {
-//     console.error("Send OTP error:", err);
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// });
-
-// // verify OTP
-// router.post("/verify-otp", (req, res) => {
-//   try {
-//     const { number, otp } = req.body;
-
-//     if (
-//       global.otpStore &&
-//       global.otpStore.number === number &&
-//       String(global.otpStore.otp) === String(otp)
-//     ) {
-//       return res.json({ success: true, message: "OTP verified" });
-//     }
-
-//     res.status(400).json({ success: false, message: "Invalid OTP" });
-//   } catch (err) {
-//     res.status(500).json({ success: false, message: "Server error" });
-//   }
-// });
-
-// export default router;
-
-
-// // import express from 'express';
-// // import { emailSignup, sendOtp, verifyOTP, googleLogin } from '../controllers/authUser.controllers.js';
-
-// // const router = express.Router();
-
-// // router.post("/signup/email", emailSignup);
-// // router.post("/login/phone/send-otp", sendOtp);
-// // router.post("/login/phone/verify-otp", verifyOTP);
-// // router.post("/login/google", googleLogin);
-
-// // export default router;
